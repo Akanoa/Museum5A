@@ -1,0 +1,45 @@
+<xml>
+    <default>
+        <dimensions height="3" width="10" length="10" nb="16" />
+        <paintings nb="4" path="datas/textures/paintings/1/"/>
+        <textures>
+            <texture type="walls" path="datas/textures/wall/wall1.jpg"></texture>
+            <texture type="ground" path="datas/textures/wall/floor1.jpg"></texture>
+            <texture type="ceiling" path="datas/textures/wall/ceiling1.jpg"></texture>
+        </textures>
+        <doors_conf>
+            <door type="big" size="4"></door>
+            <door type="normal" size="2"></door>
+            <door type="void" size="10"></door>
+            <door type="wall" size="0"></door>
+        </doors_conf>
+        <doors>
+            <door direction="up" type="wall"></door>
+            <door direction="down" type="wall"></door>
+            <door direction="left" type="wall"></door>
+            <door direction="right" type="wall"></door>
+        </doors>
+    </default>
+    <rooms>
+        <room id="0">
+            <doors>
+                <door direction="up" type="void"></door>
+                <door direction="down" type="wall"></door>
+            </doors>
+            <paintings nb="4" path="datas/textures/paintings/5/"/>
+        </room>
+        <room id="3">
+            <doors>
+                <door direction="down" type="big"></door>
+            </doors>
+            <paintings nb="4" path="datas/textures/paintings/3/"/>
+        </room>
+        <room id="8">
+            <doors>
+                <door direction="down" type="big"></door>
+                <door direction="up" type="big"></door>
+            </doors>
+            <paintings nb="2" path="datas/textures/paintings/4/"/>
+        </room>
+    </rooms>
+</xml>
