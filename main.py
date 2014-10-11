@@ -34,7 +34,7 @@ def setup():
 def init():
 	global myMuseum, myCamera
 	setup()
-	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=0.02)
+	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=0.01)
 	myMuseum = Museum("museum.xml")
 	myMuseum.init()
 	pass
@@ -92,7 +92,7 @@ if __name__ == '__main__' :
 	print "Hello World"
 	init()
 	# # La fonction update sera appelee toutes les 30eme de seconde
-	pyglet.clock.schedule_interval(update, 1.0/12.0)
+	pyglet.clock.schedule_interval(update, 1.0/60.0)
 
 	pyglet.app.run()
 
