@@ -92,7 +92,7 @@ if __name__ == '__main__' :
 	print "Hello World"
 	init()
 	# # La fonction update sera appelee toutes les 30eme de seconde
-	pyglet.clock.schedule_interval(update, 1.0/24.0)
+	pyglet.clock.schedule_interval(update, 1.0/12.0)
 
 	pyglet.app.run()
 
