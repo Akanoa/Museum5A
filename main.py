@@ -3,9 +3,12 @@
 import pyglet
 from pyglet.gl import *
 
+from primitives import *
+
 from museum import Museum
 
 import math
+import os
 
 
 import camera
@@ -36,9 +39,12 @@ def init():
 	setup()
 	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=0.01)
 	myMuseum = Museum("museum.xml")
-	myMuseum.init()
+	loading_textures()
+	# myMuseum.init()
 	pass
 
+def loading_textures():
+	print [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas")) for f in fn]
 
 @window.event
 def on_resize(width, height):
@@ -60,26 +66,13 @@ def on_draw():
 	#glClearColor(1.0,1.0,1.0,1.0)
 
 	for i in range(3):
+		glPushMatrix()
 		glTranslatef(i*10, 0, 0)
-		cube()
+		draw_cube([(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)])
+		glPopMatrix()
 
 
 	return pyglet.event.EVENT_HANDLED
-
-def cube():
-	pyglet.gl.glColor4f(1.0,0,0,1.0)
-
-	pyglet.graphics.draw_indexed(8, pyglet.gl.GL_LINES, [0, 1, 1, 2, 2, 3, 3, 0,
-														4, 5, 5, 6, 6, 7, 7, 4,
-														0, 4, 1, 5, 2, 6, 3, 7],
-														('v3f', (-1, -1, 0,
-														1, -1, 0,
-														1, 1, 0,
-														-1, 1, 0,
-														-1, -1, -1,
-														1, -1, -1,
-														1, 1, -1,
-														-1, 1, -1)))
 	
 def update(dt):
 	global horloge
