@@ -67,9 +67,7 @@ class FirstPersonCamera(object):
 			self.pressed[symbol] = False
 
 		def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-			# print self.__left_mouse_pressed 
 			if buttons & pyglet.window.mouse.LEFT:
-				#print "yolo"
 				self.dx = dx
 				self.dy = dy
 
@@ -177,7 +175,6 @@ class FirstPersonCamera(object):
  
 	def draw(self):
 		"""Apply transform"""
-		print "pitch: "+str(self.__pitch)
 		pyglet.gl.glRotatef(self.__pitch, 1.0, 0.0, 0.0)
 		pyglet.gl.glRotatef(self.__yaw, 0.0, 1.0, 0.0)
 		pyglet.gl.glTranslatef(*self.__position)
