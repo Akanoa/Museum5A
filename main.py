@@ -23,10 +23,10 @@ try:
 	config = Config(sample_buffer=1, samples=4, \
           depth_size=16, double_buffer=True)
 	window = pyglet.window.Window(resizable=True, config=config)
-	window.set_exclusive_mouse(True)
+	# window.set_exclusive_mouse(True)
 except:
 	window = pyglet.window.Window(resizable=True)
-	window.set_exclusive_mouse(True)
+	# window.set_exclusive_mouse(True)
 
 def setup():
 	glEnable(GL_DEPTH_TEST)
@@ -37,7 +37,7 @@ def setup():
 def init():
 	global myMuseum, myCamera
 	setup()
-	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=0.01)
+	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=1)
 	myMuseum = Museum("museum.xml")
 	loading_textures()
 	# myMuseum.init()
