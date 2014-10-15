@@ -28,39 +28,39 @@ def draw_cube(colors= [[1,0,0]]*6):
 	#draw front face
 	glPushMatrix()
 	glTranslatef(0,0,1)
-	draw_plane(colors[0])
+	draw_plane(color=colors[0])
 	glPopMatrix()
 
 	#draw back face
 	glPushMatrix()
 	glTranslatef(0,0,-1)
-	draw_plane(colors[1])
+	draw_plane(color=colors[1])
 	glPopMatrix()
 
 	#draw left face
 	glPushMatrix()
 	glTranslatef(1,0,0)
 	glRotatef(90, 0,1,0)
-	draw_plane(colors[2])
+	draw_plane(color=colors[2])
 	glPopMatrix()
 
 	#draw right face
 	glPushMatrix()
 	glTranslatef(-1,0,0)
 	glRotatef(90, 0,1,0)
-	draw_plane(colors[3])
+	draw_plane(color=colors[3])
 	glPopMatrix()
 
 	#draw bottom face
 	glPushMatrix()
 	glTranslatef(0,-1,0)
 	glRotatef(90, 1,0,0)
-	draw_plane(colors[4])
+	draw_plane(color=colors[4])
 	glPopMatrix()
 
 	#draw top face
 	glPushMatrix()
 	glTranslatef(0,1,0)
 	glRotatef(90, 1,0,0)
-	draw_plane(colors[5])
+	draw_plane(color=colors[5])
 	glPopMatrix()

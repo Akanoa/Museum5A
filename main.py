@@ -7,21 +7,22 @@ from primitives import *
 
 from museum import Museum
 
+import pprint
+
 import math
 import os
 
 
 import camera
 
-import xml_tool
-
 myMuseum = None 
 myCamera = None
 window   = None
+textures = {}
 
 try:
 	config = Config(sample_buffer=1, samples=4, \
-          depth_size=16, double_buffer=True)
+		  depth_size=16, double_buffer=True)
 	window = pyglet.window.Window(resizable=True, config=config)
 	# window.set_exclusive_mouse(True)
 except:
@@ -37,24 +38,52 @@ def setup():
 def init():
 	global myMuseum, myCamera
 	setup()
-	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=1)
+	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
 	myMuseum = Museum("museum.xml")
 	loading_textures()
 	# myMuseum.init()
-	pass
 
 def loading_textures():
-	print [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas")) for f in fn]
+	global textures
+
+	def walk(list_, datas, texture):
+		#generate recursively tree structure
+		if len(list_)>2:
+			if not list_[0] in datas:
+				datas[list_[0]]={}
+			walk(list_[1:], datas[list_[0]], texture)
+		else:
+			if not list_[0] in datas:
+				datas[list_[0]]={}
+			datas[list_[0]][list_[-1]]=texture
+			return texture
+
+
+
+	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas/textures")) for f in fn]
+
+	for e in list_of_textures:
+		try:
+			image = pyglet.image.load(e)
+		except pyglet.image.codecs.dds.DDSException:
+			print '"%s" is not a valid image file' % e
+			continue
+		texture = walk(e.split(os.sep)[2:], textures, image.get_texture())
+
+        glEnable(texture.target)
+        glBindTexture(texture.target, texture.id)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.get_image_data().get_data('RGBA', image.width * 4))
+
 
 @window.event
 def on_resize(width, height):
-    # Override the default on_resize handler to create a 3D projection
-    glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(70.0, width / float(height), .1, 1000.)
-    glMatrixMode(GL_MODELVIEW)
-    return pyglet.event.EVENT_HANDLED
+	# Override the default on_resize handler to create a 3D projection
+	glViewport(0, 0, width, height)
+	glMatrixMode(GL_PROJECTION)
+	glLoadIdentity()
+	gluPerspective(70.0, width / float(height), .1, 1000.)
+	glMatrixMode(GL_MODELVIEW)
+	return pyglet.event.EVENT_HANDLED
 
 
 @window.event
@@ -68,7 +97,9 @@ def on_draw():
 	for i in range(3):
 		glPushMatrix()
 		glTranslatef(i*10, 0, 0)
-		draw_cube([(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)])
+		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)])
+		glTranslatef(i*10, 0, -10)
+		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)])
 		glPopMatrix()
 
 
