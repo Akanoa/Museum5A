@@ -44,11 +44,6 @@ def loading_textures():
 		texture = image.get_texture()
 		walk(e.split(os.sep)[2:], textures, image.get_texture())
 
-		glBindTexture(GL_TEXTURE_2D,texture.id)
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR)
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
-		#glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
-
 	default_texture = textures["wall"]["wall1.jpg"]
 
 	print default_texture
@@ -58,7 +53,7 @@ def loading_textures():
 	return textures
 
 
-def draw_plane(texture=default_texture ,color = (1,0,0), type_texturing="texture"):
+def draw_plane(texture=default_texture ,color = (1,0,0), type_texturing="texture", scale_uv=1):
 
 	if type_texturing != "texture":
 		glDisable(GL_TEXTURE_2D)
@@ -71,16 +66,18 @@ def draw_plane(texture=default_texture ,color = (1,0,0), type_texturing="texture
 		glEnd()
 	else:
 		glEnable(GL_TEXTURE_2D)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
 		glBindTexture(texture.target, texture.id)
 		glBegin(GL_QUADS)
 		glTexCoord2f(0.0, 0.0)
 		glVertex3f(  -1.0,  -1.0, 0.0 )
-		glTexCoord2f(1.0, 0.0)
+		glTexCoord2f(1.0*scale_uv, 0.0)
 		glVertex3f(   1.0,  -1.0, 0.0 )
-		glTexCoord2f(1.0, 1.0)
+		glTexCoord2f(1.0*scale_uv, 1.0*scale_uv)
 		glVertex3f(   1.0,   1.0, 0.0 )
-		glTexCoord2f(0.0, 1.0)
+		glTexCoord2f(0.0, 1.0*scale_uv)
 		glVertex3f(  -1.0,   1.0, 0.0 )
 		glEnd()
 

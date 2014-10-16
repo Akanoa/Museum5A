@@ -39,8 +39,8 @@ def init():
 	textures = loading_textures()
 	setup()
 	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
-	myMuseum = Museum("museum.xml")
-	# myMuseum.init()
+	myMuseum = Museum(textures, "museum.xml")
+	myMuseum.init()
 
 @window.event
 def on_resize(width, height):
@@ -60,15 +60,7 @@ def on_draw():
 	glLoadIdentity()
 	myCamera.draw()
 	#glClearColor(1.0,1.0,1.0,1.0)
-
-	for i in range(3):
-		glPushMatrix()
-		# glTranslatef(i*10, 0, 0)
-		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
-		glTranslatef(i*10, 0, -10)
-		# print "main  texture => "+str([textures["wall"]["wall1.jpg"]]*6)
-		draw_cube(textures_=[ textures["paintings"]["4"][e] for e in textures["paintings"]["4"]])
-		glPopMatrix()
+	myMuseum.draw()
 
 
 	return pyglet.event.EVENT_HANDLED
