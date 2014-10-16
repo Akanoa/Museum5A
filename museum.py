@@ -13,7 +13,9 @@ import struct
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane
+from primitives import draw_cube, draw_plane, draw_wall
+
+import pprint
 
 class Museum:
 
@@ -90,18 +92,46 @@ class Museum:
 			return (width, height)
 
 	def draw(self):
-		pass
+		#draw ground
+		glPushMatrix()
+		glTranslatef(0,-1,0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
+		glPopMatrix()
+
+		#draw ceiling
+		glPushMatrix()
+		glTranslatef(0, self.config["default"]["dimensions"][2],0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		glPopMatrix()
+
+
+		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
+
+		draw_wall(gap=4, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]])
+
+		for i in range(3):
+			glPushMatrix()
+			# glTranslatef(i*10, 0, 0)
+			glTranslatef(i*10, 0, -10)
+			# print "main  texture => "+str([textures["wall"]["wall1.jpg"]]*6)
+			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
+			glPopMatrix()
 
 	def __generate_room_config(self):
 		nb_rooms = int(self.default_config.findall('./default/dimensions')[0].get("nb"))
 		width    = int(self.default_config.findall('./default/dimensions')[0].get("width"))
 		length   = int(self.default_config.findall('./default/dimensions')[0].get("length"))
 		height   = int(self.default_config.findall('./default/dimensions')[0].get("height"))
+		thick    = float(self.default_config.findall('./default/dimensions')[0].get("thick"))
 
 		#set default config
 		self.config["default"] = {}
 		#set dimensions
-		self.config["default"]["dimensions"]=(width, length, height)
+		self.config["default"]["dimensions"]=(width, length, height, thick)
 
 		#set texture
 		self.config["default"]["textures"]={}
@@ -148,6 +178,14 @@ class Museum:
 					path = absolute_path+os.sep+random.choice(list_paintings)
 					self.config[room_id]["paintings"].append([path, self.jpeg_res(path)])
 
+				#set dimensions
+				width    = int(self.__override_default(room_id, "dimensions").get("width"))
+				length   = int(self.__override_default(room_id, "dimensions").get("length"))
+				height   = int(self.__override_default(room_id, "dimensions").get("height"))
+				thick    = float(self.__override_default(room_id, "dimensions").get("thick"))
+
+				self.config[room_id]["dimensions"]=(width, length, height)				
+
 				#set textures
 				self.config[room_id]["textures"]={}
 				#	set wall textures
@@ -161,5 +199,4 @@ class Museum:
 				print e
 				pass
 
-		import pprint
 		pprint.pprint(self.config)

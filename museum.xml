@@ -1,6 +1,6 @@
 <xml>
     <default>
-        <dimensions height="11" width="10" length="10" nb="16" />
+        <dimensions height="4" width="10" length="10" thick="0.1" nb="16" />
         <paintings nb="4" path="1"/>
         <textures>
             <texture type="walls" path="wall1.jpg"></texture>
