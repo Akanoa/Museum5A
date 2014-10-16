@@ -19,6 +19,7 @@
             <door direction="left" type="wall"></door>
             <door direction="right" type="wall"></door>
         </doors>
+        <signalisation direction="N/A"/>
     </default>
     <rooms>
         <room id="0">

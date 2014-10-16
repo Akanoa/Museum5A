@@ -13,6 +13,7 @@ def base_window(m):
   winwidth = m.cols*CELLSIZE+(m.cols+1)*WALLSIZE
   winheight = m.rows*CELLSIZE+(m.rows+1)*WALLSIZE
   w = pygame.display.set_mode((winwidth,winheight))
+  pygame.display.set_caption("Museum map")
   w.fill(BLACK)
 
   for i in range(m.rows):
@@ -83,11 +84,14 @@ def maze_path_window(m,w):
   pygame.draw.rect(w,GREEN,(endcol*CELLSIZE+(endcol+1)*WALLSIZE,endrow*CELLSIZE+(endrow+
   1)*WALLSIZE,CELLSIZE,CELLSIZE))
   pygame.display.update()
-  
 
+  filename = "datas/textures/map.bmp"
+  pygame.image.save(w, filename) 
+  print "image successfully saved to " + filename
+ 
 
-CELLSIZE = 50
-WALLSIZE = 10
+CELLSIZE = 105
+WALLSIZE = 18
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 RED = (255,0,0)
@@ -96,7 +100,7 @@ BLUE = (0,0,255)
 
 def visualize(mazeValue):
 
-	mazeValue.solve_maze()
+	#mazeValue.solve_maze()
 	#print maze
 	#print maze.solutionpath
 

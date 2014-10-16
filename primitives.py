@@ -9,6 +9,7 @@ import pyglet
 from pyglet.gl import *
 
 import os
+import pprint
 
 textures = {}
 default_texture = None
@@ -45,7 +46,7 @@ def loading_textures():
 	default_texture = textures["wall"]["wall1.jpg"]
 
 	print "finish loading textures"
-
+	pprint.pprint(textures)
 	return textures
 
 
@@ -170,7 +171,7 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, signalisation = 0):
 
 	#draw northern wall
 	dim = dimensions[0]
@@ -201,3 +202,29 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	glRotatef(90, 0, 1, 0)
 	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3])
 	glPopMatrix()
+
+	#draw signalisation 
+	if (signalisation != -1):		#Don't draw anything
+		if signalisation == -2 :	#Begin
+			glPushMatrix()
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["home.png"])
+			glPopMatrix()
+
+		elif signalisation == -3 : 	#end
+			glPushMatrix()
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["door.png"])
+			glPopMatrix()
+		else :
+			glPushMatrix()
+			glRotatef(signalisation, 0, 1, 0)
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["arrow.png"])
+			glPopMatrix()
+
+
+

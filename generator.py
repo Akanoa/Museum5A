@@ -6,9 +6,7 @@ import random
 import os, os.path
 import xml.dom.minidom as minidom
 import imp
-
-#old system
-from generationAlgorythm import Orientation, Cell ,Wall , GenerationAlgorythm
+from math import sqrt
 
 from maze import *
 from mazeView import *
@@ -35,8 +33,8 @@ class Generator:
 		doc = tree.getroot()
 		defaultParams = doc.find('default')
 		dimensions = defaultParams.find('dimensions')
-		self.defaultNb = int(dimensions.get("nb"))
-		print defaultParams
+		self.defaultNb = int (sqrt(int(dimensions.get("nb"))))
+		print str(self.defaultNb)
 		self.root.append(defaultParams)
 
 
@@ -46,19 +44,21 @@ class Generator:
 		'''
 
 		#Generate a new maze
-		maze = Maze(self.defaultNb/4,self.defaultNb/4)
+		maze = Maze(self.defaultNb,self.defaultNb)
 		self.memoMaze = maze
 		cellList = maze.maze
 
 		#solution path, usefull for signalisation  // TODO
+		maze.solve_maze()
 		path = maze.solutionpath
+		print path
+		print path[1]
 
 		prepareWall = self.generateWallProperty(maze);
-		print prepareWall
 	
 		rooms = ET.Element('rooms')
 
-		# fetch the row
+		# fetch row
 		print "Number of row :" + str(maze.rows)
 		print "Number of columns :" + str(maze.cols)
 		for i in range(maze.rows):
@@ -73,15 +73,14 @@ class Generator:
 				#calculate new id
 				actualID = i * maze.rows + j
 
+				#Signalisation
+				signalisation = self.obtainSignalisation(path,i,j)
+
 				#generate xml
-				room = self.generateRoomXml(actualID,listWall,paintingSelected)
+				room = self.generateRoomXml(actualID, listWall, paintingSelected, signalisation)
 
 				#add it to root xml
-				print room
 				rooms.append(room)
-
-		print rooms
-		print maze.wallTypes
 
 		self.root.append(rooms)
 
@@ -98,12 +97,12 @@ class Generator:
 				if (i == 0):
 					wallTypes[i][j][2] = "wall"
 
-				if not cellList[i][j][0]:			#Bottom
+				if not cellList[i][j][0]:							#Bottom
 					wallTypes[i][j][3] = self.chooseDoorType()
 				else:
 					wallTypes[i][j][3] = "wall"
 					
-				if not cellList[i][j][1]:			#Right
+				if not cellList[i][j][1]:							#Right
 					wallTypes[i][j][1] = self.chooseDoorType()
 				else:
 					wallTypes[i][j][1] = "wall"
@@ -144,7 +143,7 @@ class Generator:
 		doorChoosen = self.defaultTypeDoors[resultRand]
 		return doorChoosen
 
-	def generateRoomXml(self,id,listWall, paintingSelected):
+	def generateRoomXml(self,id,listWall, paintingSelected, signal):
 		'''
 			Generate XMl tree of a room using the given parameters
 		'''
@@ -154,19 +153,14 @@ class Generator:
 		############Doors part##############
 		doors = ET.Element('doors')
 
-		print listWall
 		#check all walls
 		for w in range( len(listWall)):
-
 			typeDoorCurrent = listWall[w]
 			if (typeDoorCurrent != "wall"):
 				door = ET.Element('door')
 				door.set("direction",self.varToStr(w))
 				door.set("type",typeDoorCurrent)
-				print door
 				doors.append(door)
-
-		print doors
 		room.append(doors)
 
 		###########Paintings Part###########
@@ -176,15 +170,21 @@ class Generator:
 
 		paintings.set("nb",str(counter))
 		paintings.set("path",paintingSelected)
-		print paintings
 		room.append(paintings)
+
+		###########Signalisation############
+		signalisation = ET.Element('signalisation')
+		signalisation.set("direction",signal)
+		room.append(signalisation)
 
 		return room
 
 	def varToStr(self, value):
+		"""
+			Return string corresponding to the given value
+		"""
 
 		if (value == 2):
-			print "up"
 			return "up"
 		elif (value == 3):
 			return "down"
@@ -195,16 +195,42 @@ class Generator:
 		else:
 			return "unknow"
 
-	def exportToFile(self,nameFile = "generatedMuseum.xml"):
-		print "Exporting XML Tree to file :" + nameFile
+	def obtainSignalisation(self, path, x, y ):
+		"""
+			Get the corresponding signalisation ( direction up/down/right/left ) for the actual cell
+		"""
+		for index, item in enumerate(path):
+			if (x,y) == item:
+				#We are on the optimal path, searching for the next cell to get signalisation
+				if (index == 0) :
+					return "begin"
+				else :
+					
+					if (index + 1 < len(path)):
+						nextItem = path[index+1]
+						if ((x+1,y) == nextItem):
+							return "right"
+						elif ((x-1,y) == nextItem):
+							return "left"
+						elif ((x,y+1) == nextItem):
+							return "down"
+						elif ((x,y-1) == nextItem):
+							return "up"
+						else :
+							return "WTF"
+					else : 
+						return "end"
+		return "N/A"
+
+	def exportToFile(self, nameFile = "generatedMuseum.xml"):
+		print "Exporting XML Tree to file : " + nameFile
 		rough_string = ET.tostring(self.root, method="xml", encoding='UTF-8' )
 		reparsed = minidom.parseString(rough_string)
 		reparsed = reparsed.toprettyxml(indent="\t")
 		f = open(nameFile, 'w')
 		f.write(reparsed)
 		f.close()
-		print "Exporting done, new museum generated!" + nameFile
-
+		print "Exporting done, new museum generated!"
 	def visualizeMuseum(self):
 		print "Trying to launch visualisation of the map of the museum "
 		try:
@@ -216,8 +242,12 @@ class Generator:
 			found = False
 
 if __name__ == "__main__":
-	m = Generator()
-	m.prepareDefaultParameters()
-	m.generateNewMuseum()
-	m.exportToFile()
-	m.visualizeMuseum()
+	if ( len(argv) <= 1):
+		print "Usage : python generator.py -v true\n\n-v O/N - Permit visualisation of the output using pygame"
+	else:
+		m = Generator()
+		m.prepareDefaultParameters()
+		m.generateNewMuseum()
+		m.exportToFile()
+		if (argv[1] == "-v") & (argv[2] == 'O'):
+			m.visualizeMuseum()
