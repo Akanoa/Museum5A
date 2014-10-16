@@ -10,10 +10,12 @@ import os
 import random
 import struct
 
+import pprint
+
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane, draw_wall
+from primitives import draw_cube, draw_plane, draw_wall, draw_room
 
 class Museum:
 
@@ -26,20 +28,21 @@ class Museum:
 		self.textures = textures
 
 	def init(self):
+		'''
+		use default and user specified config to generate correct configs to rooms
+		all parameters can be redefined:
+			- height
+			- length
+			- width
+			- wall_texture
+			- floor_texture
+			- ground_texture
+			- nb_paintings
+		path to parameters in config dict
+		'''
 		self.__generate_room_config()
+		pprint.pprint(self.config)
 
-	'''
-	use default and user specified config to generate correct configs to rooms
-	all parameters can be redefined:
-		- height
-		- length
-		- width
-		- wall_texture
-		- floor_texture
-		- ground_texture
-		- nb_paintings
-	path to parameters in config dict
-	'''
 	def __override_default(self, room_id, args):
 		"""
 		generates given xml tree if it isn't exist 
@@ -98,18 +101,29 @@ class Museum:
 		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
 		glPopMatrix()
 
-		#draw ceiling
-		glPushMatrix()
-		glTranslatef(0, self.config["default"]["dimensions"][2],0)
-		glRotatef(90, 1,0,0)
-		glScalef(40, 40,0)
-		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
-		glPopMatrix()
+		# #draw ceiling
+		# glPushMatrix()
+		# glTranslatef(0, self.config["default"]["dimensions"][2],0)
+		# glRotatef(90, 1,0,0)
+		# glScalef(40, 40,0)
+		# draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		# glPopMatrix()
 
+		#draw test room
+
+		k=0
+
+
+		for i in range(-30, 50, 20):
+
+			for j in range(-30, 50, 20):
+				glPushMatrix()
+				glTranslatef(i, 0 ,j)
+				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4)
+				glPopMatrix()
+				k+=1
 
 		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
-
-		draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
 
 		for i in range(3):
 			glPushMatrix()
@@ -153,16 +167,16 @@ class Museum:
 				#set northern wall
 				self.config[room_id]["doors"]=[]
 				door = self.__override_default(room_id, "/doors/door[@direction='up']")
-				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
+				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 				#set southern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='down']")
-				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
+				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 				#\tset eastern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='left']")
-				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
+				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 				#set western wall
 				door = self.__override_default(room_id, "/doors/door[@direction='right']")
-				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
+				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 
 				#set numbers of paintings
 				nb = int(self.__override_default(room_id, "/paintings").get("nb"))
@@ -180,7 +194,7 @@ class Museum:
 				height   = int(self.__override_default(room_id, "dimensions").get("height"))
 				thick    = float(self.__override_default(room_id, "dimensions").get("thick"))
 
-				self.config[room_id]["dimensions"]=(width, length, height)				
+				self.config[room_id]["dimensions"]=(width, length, height, thick)				
 
 				#set textures
 				self.config[room_id]["textures"]={}
