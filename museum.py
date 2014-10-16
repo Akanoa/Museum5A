@@ -101,13 +101,13 @@ class Museum:
 		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
 		glPopMatrix()
 
-		# #draw ceiling
-		# glPushMatrix()
-		# glTranslatef(0, self.config["default"]["dimensions"][2],0)
-		# glRotatef(90, 1,0,0)
-		# glScalef(40, 40,0)
-		# draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
-		# glPopMatrix()
+		#draw ceiling
+		glPushMatrix()
+		glTranslatef(0, self.config["default"]["dimensions"][2],0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		glPopMatrix()
 
 		#draw test room
 
@@ -118,10 +118,11 @@ class Museum:
 
 			for j in range(-30, 50, 20):
 				glPushMatrix()
-				glTranslatef(i, 0 ,j)
+				glTranslatef(j, 0 ,i)
 				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4)
 				glPopMatrix()
 				k+=1
+
 
 		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
