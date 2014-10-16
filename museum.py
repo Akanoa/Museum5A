@@ -13,7 +13,7 @@ import struct
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane, draw_wall
+from primitives import draw_cube, draw_plane, draw_wall, draw_room
 
 class Museum:
 
@@ -106,10 +106,36 @@ class Museum:
 		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
 		glPopMatrix()
 
+		#draw test room
+
+		for i in range(-30, 50, 20):
+
+			for j in range(-30, 50, 20):
+
+				glPushMatrix()
+				glTranslatef(i, 0 ,j)
+				draw_room(gap=[0,4,8,10], dimensions=[[self.config["default"]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4)
+				glPopMatrix()
 
 		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
-		draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+		#draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+
+		# glPushMatrix()
+		# glTranslatef(0,0,1)
+		# draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+		# glPopMatrix()
+
+		# glPushMatrix()
+		# glTranslatef(0,0,2)
+		# draw_wall(gap=2, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+		# glPopMatrix()
+
+		# glPushMatrix()
+		# glTranslatef(0,0,2.5)
+		# draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+		# glPopMatrix()
+
 
 		for i in range(3):
 			glPushMatrix()
