@@ -32,8 +32,6 @@ def loading_textures():
 
 	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas/textures")) for f in fn]
 
-	print len(list_of_textures)
-
 	for e in list_of_textures:
 
 		try:
@@ -45,8 +43,6 @@ def loading_textures():
 		walk(e.split(os.sep)[2:], textures, image.get_texture())
 
 	default_texture = textures["wall"]["wall1.jpg"]
-
-	print default_texture
 
 	print "finish loading textures"
 

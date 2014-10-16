@@ -3,14 +3,9 @@
 import pyglet
 from pyglet.gl import *
 
-from primitives import loading_textures, draw_cube
+from primitives import loading_textures
 
 from museum import Museum
-
-import pprint
-
-import math
-
 
 import camera
 

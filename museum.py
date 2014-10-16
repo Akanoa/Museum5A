@@ -15,8 +15,6 @@ from pyglet.gl import *
 
 from primitives import draw_cube, draw_plane, draw_wall
 
-import pprint
-
 class Museum:
 
 	'''
@@ -115,9 +113,7 @@ class Museum:
 
 		for i in range(3):
 			glPushMatrix()
-			# glTranslatef(i*10, 0, 0)
 			glTranslatef(i*10, 0, -10)
-			# print "main  texture => "+str([textures["wall"]["wall1.jpg"]]*6)
 			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
 			glPopMatrix()
 
@@ -152,7 +148,6 @@ class Museum:
 
 		for room_id in range(nb_rooms):
 			try:
-				print "configuring rooms "+str(room_id)
 				#set room
 				self.config[room_id] = {"doors":{}}
 				#set northern wall
@@ -199,5 +194,3 @@ class Museum:
 			except Exception,e:
 				print e
 				pass
-
-		pprint.pprint(self.config)
