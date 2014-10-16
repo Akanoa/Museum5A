@@ -3,27 +3,30 @@
 import pyglet
 from pyglet.gl import *
 
+from primitives import loading_textures, draw_cube
+
 from museum import Museum
+
+import pprint
 
 import math
 
 
 import camera
 
-import xml_tool
-
 myMuseum = None 
 myCamera = None
 window   = None
+textures = {}
 
 try:
 	config = Config(sample_buffer=1, samples=4, \
-          depth_size=16, double_buffer=True)
+		  depth_size=16, double_buffer=True)
 	window = pyglet.window.Window(resizable=True, config=config)
-	window.set_exclusive_mouse(True)
+	# window.set_exclusive_mouse(True)
 except:
 	window = pyglet.window.Window(resizable=True)
-	window.set_exclusive_mouse(True)
+	# window.set_exclusive_mouse(True)
 
 def setup():
 	glEnable(GL_DEPTH_TEST)
@@ -32,23 +35,22 @@ def setup():
 	glEnable(GL_ALPHA_TEST)
 
 def init():
-	global myMuseum, myCamera
+	global myMuseum, myCamera, textures
+	textures = loading_textures()
 	setup()
-	myCamera = camera.FirstPersonCamera(window, mouse_sensitivity=0.01)
+	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
 	myMuseum = Museum("museum.xml")
-	myMuseum.init()
-	pass
-
+	# myMuseum.init()
 
 @window.event
 def on_resize(width, height):
-    # Override the default on_resize handler to create a 3D projection
-    glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(70.0, width / float(height), .1, 1000.)
-    glMatrixMode(GL_MODELVIEW)
-    return pyglet.event.EVENT_HANDLED
+	# Override the default on_resize handler to create a 3D projection
+	glViewport(0, 0, width, height)
+	glMatrixMode(GL_PROJECTION)
+	glLoadIdentity()
+	gluPerspective(70.0, width / float(height), .1, 1000.)
+	glMatrixMode(GL_MODELVIEW)
+	return pyglet.event.EVENT_HANDLED
 
 
 @window.event
@@ -60,26 +62,16 @@ def on_draw():
 	#glClearColor(1.0,1.0,1.0,1.0)
 
 	for i in range(3):
-		glTranslatef(i*10, 0, 0)
-		cube()
+		glPushMatrix()
+		# glTranslatef(i*10, 0, 0)
+		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
+		glTranslatef(i*10, 0, -10)
+		# print "main  texture => "+str([textures["wall"]["wall1.jpg"]]*6)
+		draw_cube(textures_=[ textures["paintings"]["4"][e] for e in textures["paintings"]["4"]])
+		glPopMatrix()
 
 
 	return pyglet.event.EVENT_HANDLED
-
-def cube():
-	pyglet.gl.glColor4f(1.0,0,0,1.0)
-
-	pyglet.graphics.draw_indexed(8, pyglet.gl.GL_LINES, [0, 1, 1, 2, 2, 3, 3, 0,
-														4, 5, 5, 6, 6, 7, 7, 4,
-														0, 4, 1, 5, 2, 6, 3, 7],
-														('v3f', (-1, -1, 0,
-														1, -1, 0,
-														1, 1, 0,
-														-1, 1, 0,
-														-1, -1, -1,
-														1, -1, -1,
-														1, 1, -1,
-														-1, 1, -1)))
 	
 def update(dt):
 	global horloge
@@ -95,7 +87,5 @@ if __name__ == '__main__' :
 	pyglet.clock.schedule_interval(update, 1.0/30.0)
 
 	pyglet.app.run()
-
-	#print xml_tool.parse(file("museum.xml"))["xml"]["default"]["dimensions"]["@width"]
 
 
