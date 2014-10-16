@@ -1,3 +1,5 @@
+#Generator.py
+#Date : 15/10/2014
 
 from lxml import etree
 import random
