@@ -101,14 +101,15 @@ class Museum:
 		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
 		glPopMatrix()
 
-		# #draw ceiling
-		# glPushMatrix()
-		# glTranslatef(0, self.config["default"]["dimensions"][2],0)
-		# glRotatef(90, 1,0,0)
-		# glScalef(40, 40,0)
-		# draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
-		# glPopMatrix()
-
+		#draw ceiling
+		"""
+		glPushMatrix()
+		glTranslatef(0, self.config["default"]["dimensions"][2],0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		glPopMatrix()
+		"""
 		#draw test room
 
 		k=0
@@ -120,6 +121,7 @@ class Museum:
 				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"] )
 				glPopMatrix()
 				k+=1
+
 
 		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
@@ -156,10 +158,10 @@ class Museum:
 		}
 
 		signal_association ={
-			"up"	:	0,
-			"down"	:	90,
-			"right"	:	180,
-			"left"	:	270,
+			"up"	:	180,
+			"down"	:	0,		
+			"right"	:	270,
+			"left"	:	90,		#OK
 			"begin"	:	-2,
 			"end"	:	-3,
 			"N/A"	:	-1,

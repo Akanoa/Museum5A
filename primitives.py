@@ -30,7 +30,6 @@ def loading_textures():
 			return texture
 
 
-
 	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas/textures")) for f in fn]
 
 	for e in list_of_textures:
@@ -142,8 +141,6 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 	x1 = -gap/1.0 - l
 	x2 = -x1
 
-	#print "l=> ",l," gap => ",gap," x1=> ",x1, "x2=> ", x2
-
 	#draw first doorpost
 	glPushMatrix()
 	glTranslatef(x1, 1, 0)
@@ -176,14 +173,14 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	#draw northern wall
 	dim = dimensions[0]
 	glPushMatrix()
-	glTranslatef(0,0,dim[0]+dim[2]/2.0)
+	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
 	draw_wall(gap=gap[0], dimensions=dim, textures_=textures_[0], colors=colors[0], type_texturing=type_texturing[0], pediment=pediment[0])
 	glPopMatrix()
 
 	#draw southern wall
 	dim = dimensions[1]
 	glPushMatrix()
-	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
+	glTranslatef(0,0,dim[0]+dim[2]/2.0)
 	draw_wall(gap=gap[1], dimensions=dim, textures_=textures_[1], colors=colors[1], type_texturing=type_texturing[1], pediment=pediment[1])
 	glPopMatrix()
 
