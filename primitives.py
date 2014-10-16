@@ -135,29 +135,69 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 	if gap >= dimensions[0]:
 		return
 
-	l = (dimensions[0]-gap)/2
-	x1 = -gap/2 - l
+	#print dimensions
+
+	l = (dimensions[0]-gap)/2.0
+	x1 = -gap/1.0 - l
 	x2 = -x1
 
+	#print "l=> ",l," gap => ",gap," x1=> ",x1, "x2=> ", x2
+
+	#draw first doorpost
 	glPushMatrix()
-	glTranslatef(x1, 0, 0)
-	glScalef(l, dimensions[1], dimensions[2])
+	glTranslatef(x1, 1, 0)
+	glScalef(l, dimensions[1]-1, dimensions[2])
 	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
 	glPopMatrix()
 
+	#draw second doorpost
 	glPushMatrix()
-	glTranslatef(x2, 0, 0)
-	glScalef(l, dimensions[1], dimensions[2])
+	glTranslatef(x2, 1, 0)
+	glScalef(l, dimensions[1]-1, dimensions[2])
 	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
 	glPopMatrix()
 
-	if pediment:
-		h = dimensions[1]/3
-		y = 3*h
+	#draw pediment
+	if pediment and gap:
+		h = dimensions[1]/3.0
+		y = 2*h
 		x3 = 0
 
 		glPushMatrix()
-		glTranslatef(x3, y, 0)
-		glScalef(gap, h, dimensions[2])
-		draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(gap, h))
+		glTranslatef(x3, y+1, 0)
+		glScalef(gap, h-1, dimensions[2])
+		draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(gap/2.0, h))
 		glPopMatrix()
+
+
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4):
+
+	#draw northern wall
+	dim = dimensions[0]
+	glPushMatrix()
+	glTranslatef(0,0,dim[0]+dim[2]/2.0)
+	draw_wall(gap=gap[0], dimensions=dim, textures_=textures_[0], colors=colors[0], type_texturing=type_texturing[0], pediment=pediment[0])
+	glPopMatrix()
+
+	#draw southern wall
+	dim = dimensions[1]
+	glPushMatrix()
+	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
+	draw_wall(gap=gap[1], dimensions=dim, textures_=textures_[1], colors=colors[1], type_texturing=type_texturing[1], pediment=pediment[1])
+	glPopMatrix()
+
+	#draw eastern wall
+	dim = dimensions[2]
+	glPushMatrix()
+	glTranslatef(-dim[0]-dim[2]/2.0,0,0)
+	glRotatef(90, 0, 1, 0)
+	draw_wall(gap=gap[2], dimensions=dim, textures_=textures_[2], colors=colors[2], type_texturing=type_texturing[2], pediment=pediment[2])
+	glPopMatrix()
+
+	#draw western wall
+	dim = dimensions[3]
+	glPushMatrix()
+	glTranslatef(dim[0]+dim[2]/2.0,0,0)
+	glRotatef(90, 0, 1, 0)
+	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3])
+	glPopMatrix()
