@@ -111,7 +111,7 @@ class Museum:
 
 		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
-		draw_wall(gap=4, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]])
+		draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
 
 		for i in range(3):
 			glPushMatrix()
@@ -175,8 +175,9 @@ class Museum:
 				list_paintings = os.listdir(absolute_path)
 				self.config[room_id]["paintings"]=[]
 				for i in range(nb):
+					path2 = absolute_path[-1]+os.sep+random.choice(list_paintings)
 					path = absolute_path+os.sep+random.choice(list_paintings)
-					self.config[room_id]["paintings"].append([path, self.jpeg_res(path)])
+					self.config[room_id]["paintings"].append([path2, self.jpeg_res(path)])
 
 				#set dimensions
 				width    = int(self.__override_default(room_id, "dimensions").get("width"))

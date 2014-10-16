@@ -130,8 +130,14 @@ def draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing
 	glPopMatrix()
 
 
-def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture"):
+def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False):
 	#A wall involve two flattened cube separe by a gap in the middle
+
+	if gap<=0:
+		gap = 0
+
+	if gap >= dimensions[0]:
+		return
 
 	l = (dimensions[0]-gap)/2
 	x1 = -gap/2 - l
@@ -140,11 +146,22 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 	glPushMatrix()
 	glTranslatef(x1, 0, 0)
 	glScalef(l, dimensions[1], dimensions[2])
-	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=dimensions[:-1])
+	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
 	glPopMatrix()
 
 	glPushMatrix()
 	glTranslatef(x2, 0, 0)
 	glScalef(l, dimensions[1], dimensions[2])
-	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=dimensions[:-1])
+	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
 	glPopMatrix()
+
+	if pediment:
+		h = dimensions[1]/3
+		y = 3*h
+		x3 = 0
+
+		glPushMatrix()
+		glTranslatef(x3, y, 0)
+		glScalef(gap, h, dimensions[2])
+		draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(gap, h))
+		glPopMatrix()
