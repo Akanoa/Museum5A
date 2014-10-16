@@ -1,170 +1,129 @@
 #Generator.py
 #Date : 15/10/2014
 
-from lxml import etree
+import xml.etree.ElementTree as ET
 import random
 import os, os.path
+import xml.dom.minidom as minidom
+import imp
 
+#old system
+from generationAlgorythm import Orientation, Cell ,Wall , GenerationAlgorythm
 
+from maze import *
+from mazeView import *
 
 class Generator:
-
 	'''
 	generation of xml file
 	'''
-	def __init__(self, config="museum.xml"):
-		self.root = etree.Element('xml')
-
-		self.defaultHeight = 3;
-		self.defaultWidth = 10;
-		self.defaultLength = 10;
-		self.defaultNb = 5;
+	def __init__(self, config="generatedMuseum.xml"):
+		self.root = ET.Element('xml')
 
 		self.defautPaintingPath = "datas/textures/paintings/"
-		self.listPaintings = ["1/","2/","3/","4/","5/"]
+		self.listPaintings = os.listdir(self.defautPaintingPath)
 
 		self.defaultTypeDoors = ["big","normal","void"]
+
 		
-		# root.append(etree.Element('child'))
-		# child = etree.Element('child')
-		# child.set("test","Coucou")
-		# child.text = 'some text'
-		# root.append(child)
-		
-		
-	'''
-	Write defaut parameters on top of the tree
-	'''
+
 	def prepareDefaultParameters(self):
-		default = etree.Element('default')
-
-		dimensions = etree.Element('dimensions')
-		dimensions.set("height",str(self.defaultHeight))
-		dimensions.set("width",str(self.defaultWidth))
-		dimensions.set("length",str(self.defaultLength))
-		dimensions.set("nb",str(self.defaultNb))
-		default.append(dimensions)
-
-		paintings = etree.Element('paintings')
-		paintings.set("nb","4")
-		paintings.set("path","datas/textures/paintings/1/")
-		default.append(paintings)
-
-		textures = etree.Element('textures')
-		texture = etree.Element('texture')
-		texture.set("type","walls")
-		texture.set("path","datas/textures/wall/wall1.jpg")
-		textures.append(texture)
-		texture.set("type","ground")
-		texture.set("path","datas/textures/wall/floor1.jpg")
-		texture = etree.Element('texture')
-		texture.set("type","ceiling")
-		texture.set("path","datas/textures/wall/ceiling1.jpg")
-		textures.append(texture)
-
-		default.append(textures)
-
-		doors_conf = etree.Element('doors_conf')
-		door = etree.Element('texture')
-		door.set("type","big")
-		door.set("size","4")
-		doors_conf.append(door)
-		door = etree.Element('door')
-		door.set("type","normal")
-		door.set("size","2")
-		doors_conf.append(door)
-		door = etree.Element('door')
-		door.set("type","void")
-		door.set("size","10")
-		doors_conf.append(door)
-		door = etree.Element('door')
-		door.set("type","wall")
-		door.set("size","0")
-		doors_conf.append(door)
-
-		default.append(doors_conf)
-
-		doors = etree.Element('doors')
-		door = etree.Element('door')
-		door.set("direction","up")
-		door.set("type","wall")
-		doors.append(door)
-		door = etree.Element('door')
-		door.set("direction","down")
-		door.set("type","wall")
-		doors.append(door)
-		door = etree.Element('door')
-		door.set("direction","left")
-		door.set("type","wall")
-		doors.append(door)
-		door = etree.Element('door')
-		door.set("direction","big")
-		door.set("type","right")
-		doors.append(door)
-
-		default.append(doors)
-
-		self.root.append(default)
+		'''
+		Write defaut parameters on top of the tree
+		'''
+		tree = ET.parse("museum.xml")
+		doc = tree.getroot()
+		defaultParams = doc.find('default')
+		dimensions = defaultParams.find('dimensions')
+		self.defaultNb = int(dimensions.get("nb"))
+		print defaultParams
+		self.root.append(defaultParams)
 
 
-	'''
-		Generate a new random museum
-	'''
 	def generateNewMuseum(self):
-		rooms = etree.Element('rooms')
+		'''
+			Generate a new random museum
+		'''
 
-		#Starting generation of museum
-		i = 0;
-		oldChoice = "none"
-		oldDoorType = "none"
-		for i in range(self.defaultNb):
-			#Determinate new direction and find from where we come
-			fromDirection = self.getFromDirection(oldChoice)
-			direction = self.selectRandomDirection(oldChoice, fromDirection)
-			
-			#Choose a paintings set for the room
-			paintingSelected = self.choosePaintingSet()
+		#Generate a new maze
+		maze = Maze(self.defaultNb/4,self.defaultNb/4)
+		self.memoMaze = maze
+		cellList = maze.maze
 
-			#Choose new type of door for the exit
-			doorType = self.chooseDoorType()
+		#solution path, usefull for signalisation  // TODO
+		path = maze.solutionpath
 
-			room = self.generateRoomXml(i,oldChoice,oldDoorType,direction,fromDirection,paintingSelected,doorType)
-			rooms.append(room)
+		prepareWall = self.generateWallProperty(maze);
+		print prepareWall
+	
+		rooms = ET.Element('rooms')
 
-			oldDoorType = doorType
-			oldChoice = direction
+		# fetch the row
+		print "Number of row :" + str(maze.rows)
+		print "Number of columns :" + str(maze.cols)
+		for i in range(maze.rows):
+			#fetch columns
+			for j in range(maze.cols):
+				#listWall = self.createWallProperty(maze, i,j)
+				listWall = prepareWall[i][j]
 
-		#Generation ended
+				#Select a set of paintings, get path to textures directory
+				paintingSelected = self.choosePaintingSet()
+
+				#calculate new id
+				actualID = i * maze.rows + j
+
+				#generate xml
+				room = self.generateRoomXml(actualID,listWall,paintingSelected)
+
+				#add it to root xml
+				print room
+				rooms.append(room)
+
+		print rooms
+		print maze.wallTypes
+
 		self.root.append(rooms)
 
-	def selectRandomDirection(self, restriction, fromDirection):
-		'''
+	def generateWallProperty (self, mazeValue):
+		cellList = mazeValue.maze
+		wallTypes = [[["void",None,"void",None] for j in range(mazeValue.cols)] for i in range(mazeValue.rows)]
 
-		'''
-		redo = True;
-		result = ""
-		while(redo):
-			redo = False
-			result = random.choice('udlr')		#UP/Down/Left/right
-			if ( (result == restriction) | (result == fromDirection)):
-				redo = True
+		for i in range(mazeValue.rows):
+			for j in range(mazeValue.cols):
+				#override left parameters if on the first raw
+				if (j == 0):
+					wallTypes[i][j][0] = "wall"
 
-		return result
+				if (i == 0):
+					wallTypes[i][j][2] = "wall"
 
-	def getFromDirection(self, choice):
+				if not cellList[i][j][0]:			#Bottom
+					wallTypes[i][j][3] = self.chooseDoorType()
+				else:
+					wallTypes[i][j][3] = "wall"
+					
+				if not cellList[i][j][1]:			#Right
+					wallTypes[i][j][1] = self.chooseDoorType()
+				else:
+					wallTypes[i][j][1] = "wall"
+
+		return wallTypes
+
+	def getOppositeDirection(self, direction):
 		'''
 			return the opposite direction for the direction given in parameters
 		'''
-		if (choice == 'r'):
-			return 'l'
-		elif (choice == 'l'):
-			return 'r'
-		elif (choice == 'u'):
-			return 'd'
-		elif (choice == 'd'):
-			return 'u'
+		if (direction == 0):
+			return 1
+		elif (direction == 1):
+			return 0
+		elif (direction == 2):
+			return 3
+		elif (direction == 3):
+			return 2
 		else:
-			return 'n'			#none
+			return 10			#none
 
 	def choosePaintingSet(self):
 		'''
@@ -173,9 +132,9 @@ class Generator:
 		'''
 		resultRand = random.randint(0, len(self.listPaintings)-1)
 		paintingSet = self.listPaintings[resultRand]
-		del self.listPaintings[resultRand]
+		#del self.listPaintings[resultRand]
 
-		return (self.defautPaintingPath + paintingSet)
+		return paintingSet
 
 	def chooseDoorType(self):
 		'''
@@ -185,63 +144,80 @@ class Generator:
 		doorChoosen = self.defaultTypeDoors[resultRand]
 		return doorChoosen
 
-	def generateRoomXml(self,id,oldChoice,oldDoorType,direction,fromDirection,paintingSelected,doorType):
+	def generateRoomXml(self,id,listWall, paintingSelected):
 		'''
 			Generate XMl tree of a room using the given parameters
 		'''
-		room = etree.Element('room')
+		room = ET.Element('room')
 		room.set("id",str(id))
 
 		############Doors part##############
-		doors = etree.Element('doors')
+		doors = ET.Element('doors')
 
-		#From door
-		door = etree.Element('door')
-		door.set("direction",self.varToStr(fromDirection))
-		door.set("type",oldDoorType)
-		doors.append(door)
+		print listWall
+		#check all walls
+		for w in range( len(listWall)):
 
-		#New door
-		door = etree.Element('door')
-		door.set("direction",self.varToStr(direction))
-		door.set("type",doorType)
-		doors.append(door)
+			typeDoorCurrent = listWall[w]
+			if (typeDoorCurrent != "wall"):
+				door = ET.Element('door')
+				door.set("direction",self.varToStr(w))
+				door.set("type",typeDoorCurrent)
+				print door
+				doors.append(door)
 
+		print doors
 		room.append(doors)
 
 		###########Paintings Part###########
-		paintings = etree.Element('paintings')
+		paintings = ET.Element('paintings')
 
-		counter = len([name for name in os.listdir(paintingSelected) if os.path.isfile(os.path.join(paintingSelected, name))])
+		counter = len([name for name in os.listdir(self.defautPaintingPath + paintingSelected) if os.path.isfile(os.path.join(self.defautPaintingPath + paintingSelected, name))])
 
 		paintings.set("nb",str(counter))
 		paintings.set("path",paintingSelected)
-
+		print paintings
 		room.append(paintings)
 
 		return room
 
 	def varToStr(self, value):
 
-		if (value == 'u'):
+		if (value == 2):
+			print "up"
 			return "up"
-		elif (value == 'd'):
+		elif (value == 3):
 			return "down"
-		elif (value == 'r'):
+		elif (value == 1):
 			return "right"
-		elif (value == 'l'):
+		elif (value == 0):
 			return "left"
 		else:
 			return "unknow"
 
 	def exportToFile(self,nameFile = "generatedMuseum.xml"):
-		s = etree.tostring(self.root, pretty_print=True, encoding='UTF-8' )
+		print "Exporting XML Tree to file :" + nameFile
+		rough_string = ET.tostring(self.root, method="xml", encoding='UTF-8' )
+		reparsed = minidom.parseString(rough_string)
+		reparsed = reparsed.toprettyxml(indent="\t")
 		f = open(nameFile, 'w')
-		f.write(s)
+		f.write(reparsed)
 		f.close()
+		print "Exporting done, new museum generated!" + nameFile
+
+	def visualizeMuseum(self):
+		print "Trying to launch visualisation of the map of the museum "
+		try:
+			print "Visualisation loaded, you can close it by closing the window"
+			visualize(self.memoMaze)
+			found = True
+		except ImportError:
+			print "Visualisation failed, you need to have pygame installed to visualise the map!"
+			found = False
 
 if __name__ == "__main__":
 	m = Generator()
 	m.prepareDefaultParameters()
 	m.generateNewMuseum()
 	m.exportToFile()
+	m.visualizeMuseum()

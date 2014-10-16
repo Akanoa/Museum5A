@@ -118,7 +118,7 @@ class Museum:
 
 			for j in range(-30, 50, 20):
 				glPushMatrix()
-				glTranslatef(i, 0 ,j)
+				glTranslatef(j, 0 ,i)
 				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4)
 				glPopMatrix()
 				k+=1
