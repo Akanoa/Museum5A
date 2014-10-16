@@ -1,11 +1,11 @@
 <xml>
     <default>
-        <dimensions height="3" width="10" length="10" nb="16" />
-        <paintings nb="4" path="datas/textures/paintings/1/"/>
+        <dimensions height="11" width="10" length="10" nb="16" />
+        <paintings nb="4" path="1"/>
         <textures>
-            <texture type="walls" path="datas/textures/wall/wall1.jpg"></texture>
-            <texture type="ground" path="datas/textures/wall/floor1.jpg"></texture>
-            <texture type="ceiling" path="datas/textures/wall/ceiling1.jpg"></texture>
+            <texture type="walls" path="wall1.jpg"></texture>
+            <texture type="ground" path="ground1.jpg"></texture>
+            <texture type="ceiling" path="ceiling1.jpg"></texture>
         </textures>
         <doors_conf>
             <door type="big" size="4"></door>
@@ -26,20 +26,20 @@
                 <door direction="up" type="void"></door>
                 <door direction="down" type="wall"></door>
             </doors>
-            <paintings nb="4" path="datas/textures/paintings/5/"/>
+            <paintings nb="4" path="5"/>
         </room>
         <room id="3">
             <doors>
                 <door direction="down" type="big"></door>
             </doors>
-            <paintings nb="4" path="datas/textures/paintings/3/"/>
+            <paintings nb="4" path="3"/>
         </room>
         <room id="8">
             <doors>
                 <door direction="down" type="big"></door>
                 <door direction="up" type="big"></door>
             </doors>
-            <paintings nb="2" path="datas/textures/paintings/4/"/>
+            <paintings nb="2" path="4"/>
         </room>
     </rooms>
 </xml>
