@@ -9,16 +9,21 @@ import xml.etree.ElementTree as ET
 import os
 import random
 import struct
-import pprint as p
+
+import pyglet
+from pyglet.gl import *
+
+from primitives import draw_cube, draw_plane, draw_wall
 
 class Museum:
 
 	'''
 	create a new museum by using config dict
 	'''
-	def __init__(self, config="museum.xml"):
+	def __init__(self, textures, config="museum.xml"):
 		self.default_config = ET.fromstring(file(config).read())
 		self.config = {}
+		self.textures = textures
 
 	def init(self):
 		self.__generate_room_config()
@@ -84,13 +89,52 @@ class Museum:
 
 			return (width, height)
 
+	def draw(self):
+		#draw ground
+		glPushMatrix()
+		glTranslatef(0,-1,0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
+		glPopMatrix()
+
+		#draw ceiling
+		glPushMatrix()
+		glTranslatef(0, self.config["default"]["dimensions"][2],0)
+		glRotatef(90, 1,0,0)
+		glScalef(40, 40,0)
+		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		glPopMatrix()
+
+
+		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
+
+		draw_wall(gap=5, dimensions=[self.config["default"]["dimensions"][e] for e in [0,2,3]], pediment=True)
+
+		for i in range(3):
+			glPushMatrix()
+			glTranslatef(i*10, 0, -10)
+			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
+			glPopMatrix()
 
 	def __generate_room_config(self):
 		nb_rooms = int(self.default_config.findall('./default/dimensions')[0].get("nb"))
 		width    = int(self.default_config.findall('./default/dimensions')[0].get("width"))
 		length   = int(self.default_config.findall('./default/dimensions')[0].get("length"))
 		height   = int(self.default_config.findall('./default/dimensions')[0].get("height"))
+		thick    = float(self.default_config.findall('./default/dimensions')[0].get("thick"))
 
+		#set default config
+		self.config["default"] = {}
+		#set dimensions
+		self.config["default"]["dimensions"]=(width, length, height, thick)
+
+		#set texture
+		self.config["default"]["textures"]={}
+		#	set ground textures
+		self.config["default"]["textures"]["ground"]  = self.default_config.findall("./default/textures/texture[@type='ground']")[0].get("path")
+		#	set floor textures
+		self.config["default"]["textures"]["ceiling"] = self.default_config.findall("./default/textures/texture[@type='ceiling']")[0].get("path")
 
 
 
@@ -104,34 +148,39 @@ class Museum:
 
 		for room_id in range(nb_rooms):
 			try:
-				print "configuring rooms "+str(room_id)
 				#set room
 				self.config[room_id] = {"doors":{}}
-				#set dimensions
-				self.config[room_id]["dimensions"]=(width, length, height)
-				#set north wall
+				#set northern wall
 				self.config[room_id]["doors"]=[]
 				door = self.__override_default(room_id, "/doors/door[@direction='up']")
 				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
-				#set south wall
+				#set southern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='down']")
 				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
-				#\tset east wall
+				#\tset eastern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='left']")
 				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
-				#set east wall
+				#set western wall
 				door = self.__override_default(room_id, "/doors/door[@direction='right']")
 				self.config[room_id]["doors"].append({"gap":gap_association[door.get("type")]})
 
 				#set numbers of paintings
 				nb = int(self.__override_default(room_id, "/paintings").get("nb"))
-				absolute_path = self.__override_default(room_id, "/paintings").get("path")
+				absolute_path = "datas/textures/paintings/"+self.__override_default(room_id, "/paintings").get("path")
 				list_paintings = os.listdir(absolute_path)
 				self.config[room_id]["paintings"]=[]
 				for i in range(nb):
-					path = absolute_path+random.choice(list_paintings)
+					path2 = absolute_path[-1]+os.sep+random.choice(list_paintings)
+					path = absolute_path+os.sep+random.choice(list_paintings)
+					self.config[room_id]["paintings"].append([path2, self.jpeg_res(path)])
 
-					self.config[room_id]["paintings"].append([path, self.jpeg_res(path)])
+				#set dimensions
+				width    = int(self.__override_default(room_id, "dimensions").get("width"))
+				length   = int(self.__override_default(room_id, "dimensions").get("length"))
+				height   = int(self.__override_default(room_id, "dimensions").get("height"))
+				thick    = float(self.__override_default(room_id, "dimensions").get("thick"))
+
+				self.config[room_id]["dimensions"]=(width, length, height)				
 
 				#set textures
 				self.config[room_id]["textures"]={}
@@ -145,9 +194,3 @@ class Museum:
 			except Exception,e:
 				print e
 				pass
-
-
-
-if __name__ == "__main__":
-	m = Museum()
-	m.init()
