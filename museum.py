@@ -9,16 +9,16 @@ import xml.etree.ElementTree as ET
 import os
 import random
 import struct
-import pprint as p
 
 class Museum:
 
 	'''
 	create a new museum by using config dict
 	'''
-	def __init__(self, config="museum.xml"):
+	def __init__(self, textures, config="museum.xml"):
 		self.default_config = ET.fromstring(file(config).read())
 		self.config = {}
+		self.textures = textures
 
 	def init(self):
 		self.__generate_room_config()
