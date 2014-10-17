@@ -103,6 +103,7 @@ class Museum:
 		glPopMatrix()
 
 		#draw ceiling
+		"""
 		glPushMatrix()
 		glTranslatef(0, self.config["default"]["dimensions"][2],0)
 		glRotatef(90, 1,0,0)
@@ -116,17 +117,16 @@ class Museum:
 		draw_painting(self.textures["paintings"]["4"]["kyudoka-japanese-archers-c1860-photo-chopshop.jpg"], (642,800))
 		glPopMatrix()
 
+		"""
 		#draw test room
 
 		k=0
-
-
 		for i in range(-30, 50, 20):
 
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4)
+				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"] )
 				glPopMatrix()
 				k+=1
 
@@ -149,16 +149,14 @@ class Museum:
 		#set default config
 		self.config["default"] = {}
 		#set dimensions
-		self.config["default"]["dimensions"]=(width, length, height, thick)
+		self.config["default"]["dimensions"]= (width, length, height, thick)
 
 		#set texture
-		self.config["default"]["textures"]={}
+		self.config["default"]["textures"]= {}
 		#	set ground textures
 		self.config["default"]["textures"]["ground"]  = self.default_config.findall("./default/textures/texture[@type='ground']")[0].get("path")
 		#	set floor textures
 		self.config["default"]["textures"]["ceiling"] = self.default_config.findall("./default/textures/texture[@type='ceiling']")[0].get("path")
-
-
 
 		gap_association = {
 			"void"   : int(self.default_config.findall("./default/doors_conf/door[@type='void']")[0].get("size")),
@@ -167,13 +165,22 @@ class Museum:
 			"wall"   : int(self.default_config.findall("./default/doors_conf/door[@type='wall']")[0].get("size"))
 		}
 
+		signal_association ={
+			"up"	:	180,
+			"down"	:	0,		
+			"right"	:	270,
+			"left"	:	90,		#OK
+			"begin"	:	-2,
+			"end"	:	-3,
+			"N/A"	:	-1,
+		}
 
 		for room_id in range(nb_rooms):
 			try:
 				#set room
 				self.config[room_id] = {"doors":{}}
 				#set northern wall
-				self.config[room_id]["doors"]=[]
+				self.config[room_id]["doors"] = []
 				door = self.__override_default(room_id, "/doors/door[@direction='up']")
 				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 				#set southern wall
@@ -185,6 +192,9 @@ class Museum:
 				#set western wall
 				door = self.__override_default(room_id, "/doors/door[@direction='right']")
 				self.config[room_id]["doors"].append(gap_association[door.get("type")])
+
+				signalisation = self.__override_default(room_id, "/signalisation").get("direction")
+				self.config[room_id]["signalisation"] = signal_association[signalisation]
 
 				#set numbers of paintings
 				nb = int(self.__override_default(room_id, "/paintings").get("nb"))

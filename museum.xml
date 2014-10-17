@@ -58,10 +58,8 @@
             
 
         </doors>
-        
-
+        <signalisation direction="N/A"/>
     </default>
-    
 
     <rooms>
         <room id="0">

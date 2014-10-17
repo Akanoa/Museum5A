@@ -34,7 +34,7 @@ def init():
 	textures = loading_textures()
 	setup()
 	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
-	myMuseum = Museum(textures, "museum.xml")
+	myMuseum = Museum(textures, "generatedMuseum.xml")
 	myMuseum.init()
 
 @window.event
