@@ -15,7 +15,7 @@ import pprint
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane, draw_wall, draw_room
+from primitives import draw_cube, draw_plane, draw_wall, draw_room, draw_painting
 
 class Museum:
 
@@ -41,7 +41,8 @@ class Museum:
 		path to parameters in config dict
 		'''
 		self.__generate_room_config()
-		pprint.pprint(self.config)
+		# pprint.pprint(self.config)
+		# pprint.pprint(self.textures)
 
 	def __override_default(self, room_id, args):
 		"""
@@ -107,6 +108,12 @@ class Museum:
 		glRotatef(90, 1,0,0)
 		glScalef(40, 40,0)
 		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
+		glPopMatrix()
+
+		#draw painting
+		glPushMatrix()
+		glTranslatef(4,1,0)
+		draw_painting(self.textures["paintings"]["4"]["kyudoka-japanese-archers-c1860-photo-chopshop.jpg"], (642,800))
 		glPopMatrix()
 
 		#draw test room
@@ -207,5 +214,5 @@ class Museum:
 				self.config[room_id]["textures"]["ceiling"] = self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")
 
 			except Exception,e:
-				print e
+				print "error ",e
 				pass

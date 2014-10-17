@@ -167,7 +167,10 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_painting=[]):
+
+	#distribute paintings
+	left_painting = len(list_painting)
 
 	#draw northern wall
 	dim = dimensions[0]
@@ -197,4 +200,11 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	glTranslatef(dim[0]+dim[2]/2.0,0,0)
 	glRotatef(90, 0, 1, 0)
 	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3])
+	glPopMatrix()
+
+def draw_painting(texture, dim):
+
+	glPushMatrix()
+	glScalef(1,dim[1]/dim[0],0.05)
+	draw_cube(textures_=[texture], colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(1,1))
 	glPopMatrix()
