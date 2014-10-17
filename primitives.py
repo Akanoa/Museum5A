@@ -10,15 +10,18 @@ from pyglet.gl import *
 
 import os
 import pprint
+import sys
 
 import random
 
 textures = {}
 default_texture = None
 gap_asso = {}
+paint_asso = {}
 
 def set_gap_association(asso):
 	global gap_asso
+
 	gap_asso = asso
 
 def loading_textures():
@@ -133,8 +136,10 @@ def draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing
 	glPopMatrix()
 
 
-def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False):
+def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False, paintings=[]):
 	#A wall involve two flattened cube separe by a gap in the middle
+
+	gap = gap_asso[gap]
 
 	if gap<=0:
 		gap = 0
@@ -147,6 +152,14 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 	l = (dimensions[0]-gap)/2.0
 	x1 = -gap/1.0 - l
 	x2 = -x1
+
+	k = 1
+	for painting in paintings:
+		glPushMatrix()
+		glTranslatef(0,0,k*0.5)
+		draw_painting(painting)
+		glPopMatrix() 
+		k+=1
 
 	#draw first doorpost
 	glPushMatrix()
@@ -175,37 +188,23 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_paintings_=[], signalisation=-1):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, paintings=[], signalisation=-1):
+	
+	#pprint.pprint(paintings)
 
-	#distribute paintings
-	list_paintings = list_paintings_[:]
-
-	#select usable walls
-	paintings = dict(zip(range(4),[[]]*4))
-
-	left_painting = True
-	while left_painting:
-		for i in range(len(gap)):
-			if gap[i] < 9:
-				paintings[i].append(list_paintings.pop(list_paintings.index(random.choice(list_paintings)))[0])
-				if len(list_paintings)<1:
-					left_painting = False
-					break
-
-
-	pprint.pprint(paintings)
 	#draw northern wall
 	dim = dimensions[0]
 	glPushMatrix()
 	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
-	draw_wall(gap=gap[0], dimensions=dim, textures_=textures_[0], colors=colors[0], type_texturing=type_texturing[0], pediment=pediment[0])
+	draw_wall(gap=gap[0], dimensions=dim, textures_=textures_[0], colors=colors[0], type_texturing=type_texturing[0], pediment=pediment[0], paintings=paintings[0])
 	glPopMatrix()
 
 	#draw southern wall
 	dim = dimensions[1]
 	glPushMatrix()
 	glTranslatef(0,0,dim[0]+dim[2]/2.0)
-	draw_wall(gap=gap[1], dimensions=dim, textures_=textures_[1], colors=colors[1], type_texturing=type_texturing[1], pediment=pediment[1])
+	glRotatef(180,0,1,0)
+	draw_wall(gap=gap[1], dimensions=dim, textures_=textures_[1], colors=colors[1], type_texturing=type_texturing[1], pediment=pediment[1], paintings=paintings[1])
 	glPopMatrix()
 
 	#draw eastern wall
@@ -213,15 +212,15 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	glPushMatrix()
 	glTranslatef(-dim[0]-dim[2]/2.0,0,0)
 	glRotatef(90, 0, 1, 0)
-	draw_wall(gap=gap[2], dimensions=dim, textures_=textures_[2], colors=colors[2], type_texturing=type_texturing[2], pediment=pediment[2])
+	draw_wall(gap=gap[2], dimensions=dim, textures_=textures_[2], colors=colors[2], type_texturing=type_texturing[2], pediment=pediment[2], paintings=paintings[2])
 	glPopMatrix()
 
 	#draw western wall
 	dim = dimensions[3]
 	glPushMatrix()
 	glTranslatef(dim[0]+dim[2]/2.0,0,0)
-	glRotatef(90, 0, 1, 0)
-	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3])
+	glRotatef(-90, 0, 1, 0)
+	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3], paintings=paintings[3])
 	glPopMatrix()
 
 	#draw signalisation 
