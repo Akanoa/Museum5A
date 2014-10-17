@@ -137,9 +137,9 @@ class Museum:
 
 		paint_asso = {
 			"wall"  : 3,
-			"big"   : 0,
-			"normal": 0,
-			"void"  : 0
+			"big"   : 2,
+			"normal": 2,
+			"void"  : 2
 		}
 
 		set_gap_association(gap_association)

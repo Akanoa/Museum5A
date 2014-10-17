@@ -137,30 +137,8 @@ def draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing
 
 def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False, paintings=[]):
 	#A wall involve two flattened cube separe by a gap in the middle
-
+	gap_name = gap
 	#draw paintings
-	if gap == "wall":
-
-		def drange(start, stop, step):
-			r = start
-			while r < stop:
-				yield r
-				r += step
-
-		n = len(paintings)
-		begin = -dimensions[0]/2.0 + dimensions[0]/float(n+1)
-		end   = -dimensions[0]/2.0 + (n+1)*dimensions[0]/float(n+1)
-		step  = dimensions[0]/float(n+1)
-
-		k=0
-		for x in drange(begin, end, step):
-			glPushMatrix()
-			glTranslatef(2*x,dimensions[1]/2.0,0.2)
-			draw_painting(paintings[k])
-			glPopMatrix() 
-			k+=1
-
-		# sys.exit(0)
 
 
 	gap = gap_asso[gap]
@@ -176,6 +154,41 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 	l = (dimensions[0]-gap)/2.0
 	x1 = -gap/1.0 - l
 	x2 = -x1
+
+
+	#draw painting
+	n = len(paintings)
+	if gap == "wall":
+
+		def drange(start, stop, step):
+			r = start
+			while r < stop:
+				yield r
+				r += step
+
+		begin = -dimensions[0]/2.0 + dimensions[0]/float(n+1)
+		end   = -dimensions[0]/2.0 + (n+1)*dimensions[0]/float(n+1)
+		step  = dimensions[0]/float(n+1)
+
+		k=0
+		for x in drange(begin, end, step):
+			glPushMatrix()
+			glTranslatef(2*x,dimensions[1]/2.0,0.2)
+			draw_painting(paintings[k])
+			glPopMatrix() 
+			k+=1
+	else:
+		#place painting on 1st doorpost
+		if n:
+			glPushMatrix()
+			glTranslatef(x1,dimensions[1]/2.0,0.2)
+			draw_painting(paintings[0])
+			glPopMatrix()
+		if n>1:
+			glPushMatrix()
+			glTranslatef(x2,dimensions[1]/2.0,0.2)
+			draw_painting(paintings[1])
+			glPopMatrix()
 
 	#draw first doorpost
 	glPushMatrix()
@@ -265,7 +278,7 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 			#Rotate to put it on the ground
 			glRotatef(90, 1,0,0)
 			draw_plane(texture = textures["signalisation"]["arrow.png"])
-			glPopMatrix()
+			glPopMatrix() 
 
 def draw_painting(texture):
 
