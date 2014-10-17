@@ -9,6 +9,7 @@ import pyglet
 from pyglet.gl import *
 
 import os
+import pprint
 
 textures = {}
 default_texture = None
@@ -29,7 +30,6 @@ def loading_textures():
 			return texture
 
 
-
 	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas/textures")) for f in fn]
 
 	for e in list_of_textures:
@@ -45,7 +45,7 @@ def loading_textures():
 	default_texture = textures["wall"]["wall1.jpg"]
 
 	print "finish loading textures"
-
+	pprint.pprint(textures)
 	return textures
 
 
@@ -141,8 +141,6 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 	x1 = -gap/1.0 - l
 	x2 = -x1
 
-	#print "l=> ",l," gap => ",gap," x1=> ",x1, "x2=> ", x2
-
 	#draw first doorpost
 	glPushMatrix()
 	glTranslatef(x1, 1, 0)
@@ -170,19 +168,19 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, signalisation = 0):
 
 	#draw northern wall
 	dim = dimensions[0]
 	glPushMatrix()
-	glTranslatef(0,0,dim[0]+dim[2]/2.0)
+	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
 	draw_wall(gap=gap[0], dimensions=dim, textures_=textures_[0], colors=colors[0], type_texturing=type_texturing[0], pediment=pediment[0])
 	glPopMatrix()
 
 	#draw southern wall
 	dim = dimensions[1]
 	glPushMatrix()
-	glTranslatef(0,0,-dim[0]-dim[2]/2.0)
+	glTranslatef(0,0,dim[0]+dim[2]/2.0)
 	draw_wall(gap=gap[1], dimensions=dim, textures_=textures_[1], colors=colors[1], type_texturing=type_texturing[1], pediment=pediment[1])
 	glPopMatrix()
 
@@ -201,3 +199,29 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	glRotatef(90, 0, 1, 0)
 	draw_wall(gap=gap[3], dimensions=dim, textures_=textures_[3], colors=colors[3], type_texturing=type_texturing[3], pediment=pediment[3])
 	glPopMatrix()
+
+	#draw signalisation 
+	if (signalisation != -1):		#Don't draw anything
+		if signalisation == -2 :	#Begin
+			glPushMatrix()
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["home.png"])
+			glPopMatrix()
+
+		elif signalisation == -3 : 	#end
+			glPushMatrix()
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["door.png"])
+			glPopMatrix()
+		else :
+			glPushMatrix()
+			glRotatef(signalisation, 0, 1, 0)
+			#Rotate to put it on the ground
+			glRotatef(90, 1,0,0)
+			draw_plane(texture = textures["signalisation"]["arrow.png"])
+			glPopMatrix()
+
+
+
