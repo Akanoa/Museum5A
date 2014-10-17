@@ -41,7 +41,7 @@ class Museum:
 		path to parameters in config dict
 		'''
 		self.__generate_room_config()
-		# pprint.pprint(self.config)
+		pprint.pprint(self.config)
 		# pprint.pprint(self.textures)
 
 	def __override_default(self, room_id, args):
@@ -126,7 +126,7 @@ class Museum:
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"] )
+				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], list_paintings=self.config[k]["paintings"] )
 				glPopMatrix()
 				k+=1
 

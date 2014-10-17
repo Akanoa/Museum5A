@@ -11,6 +11,8 @@ from pyglet.gl import *
 import os
 import pprint
 
+import random
+
 textures = {}
 default_texture = None
 
@@ -45,7 +47,7 @@ def loading_textures():
 	default_texture = textures["wall"]["wall1.jpg"]
 
 	print "finish loading textures"
-	pprint.pprint(textures)
+	#pprint.pprint(textures)
 	return textures
 
 
@@ -168,10 +170,19 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_painting=[], signalisation=-1):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_paintings=[], signalisation=-1):
 
 	#distribute paintings
-	left_painting = len(list_painting)
+
+	#select usable walls
+	paintings = dict(zip(range(4),[[]]*4))
+
+	while(len(list_paintings)):
+		for i in range(len(gap)):
+			if gap[i] < 9:
+				choosen = random.choice(list_paintings)
+				paintings[i].append(list_paintings.pop(list_paintings.index(choosen)))
+
 
 	#draw northern wall
 	dim = dimensions[0]
@@ -229,9 +240,9 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 			draw_plane(texture = textures["signalisation"]["arrow.png"])
 			glPopMatrix()
 
-def draw_painting(texture, dim):
+def draw_painting(texture):
 
 	glPushMatrix()
-	glScalef(1,dim[1]/dim[0],0.05)
+	glScalef(1,1,0.05)
 	draw_cube(textures_=[texture], colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(1,1))
 	glPopMatrix()
