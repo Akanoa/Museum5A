@@ -17,7 +17,6 @@ import random
 textures = {}
 default_texture = None
 gap_asso = {}
-paint_asso = {}
 
 def set_gap_association(asso):
 	global gap_asso
@@ -139,6 +138,31 @@ def draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing
 def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False, paintings=[]):
 	#A wall involve two flattened cube separe by a gap in the middle
 
+	#draw paintings
+	if gap == "wall":
+
+		def drange(start, stop, step):
+			r = start
+			while r < stop:
+				yield r
+				r += step
+
+		n = len(paintings)
+		begin = -dimensions[0]/2.0 + dimensions[0]/float(n+1)
+		end   = -dimensions[0]/2.0 + (n+1)*dimensions[0]/float(n+1)
+		step  = dimensions[0]/float(n+1)
+
+		k=0
+		for x in drange(begin, end, step):
+			glPushMatrix()
+			glTranslatef(2*x,dimensions[1]/2.0,0.2)
+			draw_painting(paintings[k])
+			glPopMatrix() 
+			k+=1
+
+		# sys.exit(0)
+
+
 	gap = gap_asso[gap]
 
 	if gap<=0:
@@ -152,14 +176,6 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 	l = (dimensions[0]-gap)/2.0
 	x1 = -gap/1.0 - l
 	x2 = -x1
-
-	k = 1
-	for painting in paintings:
-		glPushMatrix()
-		glTranslatef(0,0,k*0.5)
-		draw_painting(painting)
-		glPopMatrix() 
-		k+=1
 
 	#draw first doorpost
 	glPushMatrix()
@@ -188,9 +204,11 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 		glPopMatrix()
 
 
+
+
 def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, paintings=[], signalisation=-1):
 	
-	#pprint.pprint(paintings)
+	# pprint.pprint(paintings)
 
 	#draw northern wall
 	dim = dimensions[0]

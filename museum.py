@@ -94,11 +94,10 @@ class Museum:
 		for i in range(-30, 50, 20):
 
 			for j in range(-30, 50, 20):
-				if k in range(16):
-					glPushMatrix()
-					glTranslatef(j, 0 ,i)
-					draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
-					glPopMatrix()
+				glPushMatrix()
+				glTranslatef(j, 0 ,i)
+				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
+				glPopMatrix()
 				k+=1
 
 
@@ -137,9 +136,9 @@ class Museum:
 		}
 
 		paint_asso = {
-			"wall"  : 1,
-			"big"   : 2,
-			"normal": 2,
+			"wall"  : 3,
+			"big"   : 0,
+			"normal": 0,
 			"void"  : 0
 		}
 

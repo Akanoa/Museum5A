@@ -71,7 +71,7 @@
 			<doors>
 				<door direction="right" type="big"/>
 			</doors>
-			<paintings nb="4" path="1"/>
+			<paintings nb="8" path="3"/>
 			<signalisation direction="N/A"/>
 		</room>
 		<room id="1">
