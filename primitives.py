@@ -207,6 +207,7 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 	if (signalisation != -1):		#Don't draw anything
 		if signalisation == -2 :	#Begin
 			glPushMatrix()
+			glTranslatef(0,-0.95,0);
 			#Rotate to put it on the ground
 			glRotatef(90, 1,0,0)
 			draw_plane(texture = textures["signalisation"]["home.png"])
@@ -214,12 +215,14 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture
 
 		elif signalisation == -3 : 	#end
 			glPushMatrix()
+			glTranslatef(0,-0.95,0);
 			#Rotate to put it on the ground
 			glRotatef(90, 1,0,0)
 			draw_plane(texture = textures["signalisation"]["door.png"])
 			glPopMatrix()
 		else :
 			glPushMatrix()
+			glTranslatef(0,-0.95,0);
 			glRotatef(signalisation, 0, 1, 0)
 			#Rotate to put it on the ground
 			glRotatef(90, 1,0,0)
