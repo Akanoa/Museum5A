@@ -9,13 +9,13 @@ import xml.etree.ElementTree as ET
 import os
 import random
 import struct
-
+import traceback
 import pprint
 
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane, draw_wall, draw_room, draw_painting
+from primitives import draw_cube, draw_plane, draw_wall, draw_room, draw_painting, set_gap_association
 
 class Museum:
 
@@ -41,7 +41,7 @@ class Museum:
 		path to parameters in config dict
 		'''
 		self.__generate_room_config()
-		pprint.pprint(self.config)
+		# pprint.pprint(self.config)
 		# pprint.pprint(self.textures)
 
 	def __override_default(self, room_id, args):
@@ -126,7 +126,7 @@ class Museum:
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], list_paintings=self.config[k]["paintings"] )
+				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], list_paintings_=self.config[k]["paintings"] )
 				glPopMatrix()
 				k+=1
 
@@ -165,6 +165,8 @@ class Museum:
 			"wall"   : int(self.default_config.findall("./default/doors_conf/door[@type='wall']")[0].get("size"))
 		}
 
+		set_gap_association(gap_association)
+
 		signal_association ={
 			"up"	:	180,
 			"down"	:	0,		
@@ -197,8 +199,8 @@ class Museum:
 				self.config[room_id]["signalisation"] = signal_association[signalisation]
 
 				#set numbers of paintings
-				nb = int(self.__override_default(room_id, "/paintings").get("nb"))
-				absolute_path = "datas/textures/paintings/"+self.__override_default(room_id, "/paintings").get("path")
+				nb = int(self.__override_default(room_id, "paintings").get("nb"))
+				absolute_path = os.sep.join(["datas","textures","paintings", ""])+self.__override_default(room_id, "/paintings").get("path")
 				list_paintings = os.listdir(absolute_path)
 				self.config[room_id]["paintings"]=[]
 				for i in range(nb):
@@ -224,5 +226,5 @@ class Museum:
 				self.config[room_id]["textures"]["ceiling"] = self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")
 
 			except Exception,e:
-				print "error ",e
+				#traceback.print_exc()
 				pass

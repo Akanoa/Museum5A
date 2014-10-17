@@ -15,6 +15,11 @@ import random
 
 textures = {}
 default_texture = None
+gap_asso = {}
+
+def set_gap_association(asso):
+	global gap_asso
+	gap_asso = asso
 
 def loading_textures():
 	global textures, default_texture
@@ -32,7 +37,7 @@ def loading_textures():
 			return texture
 
 
-	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser("datas/textures")) for f in fn]
+	list_of_textures = [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser(os.sep.join(["datas","textures"]))) for f in fn]
 
 	for e in list_of_textures:
 
@@ -170,20 +175,25 @@ def draw_wall(gap=0, dimensions=(10,11,0.1), textures_=[default_texture]*6, colo
 		glPopMatrix()
 
 
-def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_paintings=[], signalisation=-1):
+def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=[[default_texture]*6]*4, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, list_paintings_=[], signalisation=-1):
 
 	#distribute paintings
+	list_paintings = list_paintings_[:]
 
 	#select usable walls
 	paintings = dict(zip(range(4),[[]]*4))
 
-	while(len(list_paintings)):
+	left_painting = True
+	while left_painting:
 		for i in range(len(gap)):
 			if gap[i] < 9:
-				choosen = random.choice(list_paintings)
-				paintings[i].append(list_paintings.pop(list_paintings.index(choosen)))
+				paintings[i].append(list_paintings.pop(list_paintings.index(random.choice(list_paintings)))[0])
+				if len(list_paintings)<1:
+					left_painting = False
+					break
 
 
+	pprint.pprint(paintings)
 	#draw northern wall
 	dim = dimensions[0]
 	glPushMatrix()
