@@ -5,7 +5,6 @@ import collections
  
 import pyglet
  
- 
 class FirstPersonCamera(object):
 	"""First person camera implementation
  
@@ -89,8 +88,9 @@ class FirstPersonCamera(object):
 		self.__yaw = 0.0
 		self.__pitch = 0.0
 
-		self.__threshold = 0.0
 		self.__max_mouse_speed = 8.0
+		self.__max_pitch_angle = 80.0
+		self.__min_pitch_angle = -40.0
  
 		self.__input_handler = FirstPersonCamera.InputHandler()
  
@@ -100,24 +100,31 @@ class FirstPersonCamera(object):
 		self.key_map = key_map
 		self.movement_speed = movement_speed
 		self.mouse_sensitivity = mouse_sensitivity
+
+	def deg2degLimit(self,d):
+		"""
+			Overwrite the given angle if it is to superior to 360 !
+		"""
+		if abs(d) > 360: return d % 360.0
+		else : return d
  
 	def yaw(self, yaw):
 		"""Turn above x-axis"""
 		new_yaw = yaw * self.mouse_sensitivity
-		if abs(new_yaw) > self.__threshold:
-			if abs(new_yaw) > self.__max_mouse_speed:
-				self.__yaw = self.__max_mouse_speed*new_yaw/abs(new_yaw)
-			else:
-				self.__yaw += new_yaw
- 
+		self.__yaw += new_yaw
+		self.__yaw = self.deg2degLimit(self.__yaw)
+
 	def pitch(self, pitch):
 		"""Turn above y-axis"""
 		new_pitch = pitch * self.mouse_sensitivity * ((-1) if self.y_inv else 1)
-		if abs(new_pitch) > self.__threshold:
-			if abs(new_pitch) > self.__max_mouse_speed:
-				self.__pitch = self.__max_mouse_speed*new_pitch/abs(new_pitch)
-			else:
-				self.__pitch += new_pitch
+
+		self.__pitch += new_pitch
+
+		#restriction to don't invert the camera ...
+		if self.__pitch > self.__max_pitch_angle : self.__pitch = self.__max_pitch_angle
+		elif self.__pitch < self.__min_pitch_angle : self.__pitch = self.__min_pitch_angle
+		
+		self.__pitch = self.deg2degLimit(self.__pitch)
  
 	def move_forward(self, distance):
 		"""Move forward on distance"""

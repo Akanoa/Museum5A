@@ -69,43 +69,44 @@
 	<rooms>
 		<room id="0">
 			<doors>
-				<door direction="right" type="big"/>
+				<door direction="right" type="normal"/>
+				<door direction="down" type="normal"/>
 			</doors>
-			<paintings nb="3" path="1"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="5" path="4"/>
+			<signalisation direction="right"/>
 		</room>
 		<room id="1">
 			<doors>
 				<door direction="left" type="void"/>
-				<door direction="right" type="void"/>
+				<door direction="right" type="big"/>
 			</doors>
-			<paintings nb="3" path="1"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="5" path="4"/>
+			<signalisation direction="up"/>
 		</room>
 		<room id="2">
 			<doors>
 				<door direction="left" type="void"/>
-				<door direction="right" type="normal"/>
-				<door direction="down" type="big"/>
+				<door direction="right" type="big"/>
+				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="down"/>
+			<paintings nb="3" path="3"/>
+			<signalisation direction="up"/>
 		</room>
 		<room id="3">
 			<doors>
 				<door direction="left" type="void"/>
-				<door direction="down" type="void"/>
+				<door direction="down" type="normal"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="right"/>
+			<paintings nb="5" path="4"/>
+			<signalisation direction="N/A"/>
 		</room>
 		<room id="4">
 			<doors>
-				<door direction="right" type="void"/>
 				<door direction="up" type="void"/>
+				<door direction="down" type="void"/>
 			</doors>
 			<paintings nb="5" path="4"/>
-			<signalisation direction="begin"/>
+			<signalisation direction="right"/>
 		</room>
 		<room id="5">
 			<doors>
@@ -113,14 +114,14 @@
 				<door direction="up" type="void"/>
 				<door direction="down" type="normal"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="right"/>
+			<paintings nb="3" path="1"/>
+			<signalisation direction="N/A"/>
 		</room>
 		<room id="6">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="normal"/>
+				<door direction="down" type="big"/>
 			</doors>
 			<paintings nb="4" path="5"/>
 			<signalisation direction="left"/>
@@ -129,53 +130,51 @@
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="3" path="3"/>
-			<signalisation direction="right"/>
+			<paintings nb="3" path="1"/>
+			<signalisation direction="N/A"/>
 		</room>
 		<room id="8">
 			<doors>
-				<door direction="right" type="normal"/>
+				<door direction="right" type="big"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="4" path="5"/>
-			<signalisation direction="right"/>
+			<paintings nb="5" path="4"/>
+			<signalisation direction="down"/>
 		</room>
 		<room id="9">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
+				<door direction="down" type="void"/>
 			</doors>
 			<paintings nb="3" path="3"/>
-			<signalisation direction="up"/>
+			<signalisation direction="right"/>
 		</room>
 		<room id="10">
 			<doors>
 				<door direction="left" type="void"/>
+				<door direction="right" type="normal"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="big"/>
 			</doors>
-			<paintings nb="5" path="4"/>
+			<paintings nb="3" path="1"/>
 			<signalisation direction="left"/>
 		</room>
 		<room id="11">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="normal"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="end"/>
+			<paintings nb="4" path="5"/>
+			<signalisation direction="begin"/>
 		</room>
 		<room id="12">
 			<doors>
-				<door direction="right" type="normal"/>
+				<door direction="right" type="void"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="3" path="3"/>
-			<signalisation direction="down"/>
+			<paintings nb="4" path="5"/>
+			<signalisation direction="end"/>
 		</room>
 		<room id="13">
 			<doors>
@@ -183,23 +182,24 @@
 				<door direction="right" type="void"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="5" path="4"/>
-			<signalisation direction="down"/>
+			<paintings nb="4" path="5"/>
+			<signalisation direction="up"/>
 		</room>
 		<room id="14">
 			<doors>
 				<door direction="left" type="void"/>
+				<door direction="right" type="normal"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="3" path="3"/>
-			<signalisation direction="left"/>
+			<paintings nb="4" path="5"/>
+			<signalisation direction="N/A"/>
 		</room>
 		<room id="15">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="5"/>
+			<paintings nb="5" path="4"/>
 			<signalisation direction="N/A"/>
 		</room>
 	</rooms>
