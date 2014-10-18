@@ -23,16 +23,15 @@ class Maze:
     self.rows = rows
     self.cols = cols
     self.maze = [[[True,True,False] for j in range(cols)] for i in range(rows)]
-    self.wallTypes = [[[None,None,None,None] for j in range(cols)] for i in range(rows)]
 
     # set current position, start and end point
     # start and end points are used to solve the maze
     # currrow is used to generate the maze
     self.startrow = random.randrange(rows)
-    self.startcol = 0       #Forced on the left side of the museum
+    self.startcol = random.randrange(rows)       #Forced on the left side of the museum
 
     self.endrow = random.randrange(rows)
-    self.endcol = cols-1    #forced on the right side of the museum
+    self.endcol = random.randrange(rows)    #forced on the right side of the museum
 
     currrow = self.startrow
     currcol = self.startcol
@@ -194,3 +193,22 @@ class Maze:
   def solve_maze(self):
     self._solve_maze_aux(self.startrow,self.startcol,0)
     self._get_solution_path()
+
+  #searchForMaze with path > 
+def maze_search(rows, cols, minSize):
+  """
+    Search for a maze with a minimal path of minSize !
+    TODO : Limit for the serch, and return the maze with the maximal lenght if not found
+  """
+
+  maze = None
+  path = None
+
+  while True:
+    maze = Maze(rows, cols)
+    maze.solve_maze()
+    path = maze.solutionpath
+    if len(path) >= minSize:
+      break
+
+  return [maze,path]

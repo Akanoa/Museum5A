@@ -1,1 +1,9 @@
 *.pyc
+datas2/
+
+#ignore everything in directory generated
+datas/generated/*
+
+#except default directory
+!datas/generated/defaultMuseum/
+!datas/generated/defaultMuseum/*

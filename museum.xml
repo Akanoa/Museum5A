@@ -1,66 +1,27 @@
 <?xml version="1.0" ?>
 <xml>
     <default>
-        
-
         <dimensions height="4" length="10" nb="16" thick="0.1" width="10"/>
-        
-
         <paintings nb="4" path="1"/>
-        
-
         <textures>
-            
-
             <texture path="wall1.jpg" type="walls"/>
-            
-
             <texture path="ground1.jpg" type="ground"/>
-            
-
             <texture path="ceiling1.jpg" type="ceiling"/>
-            
-
         </textures>
-        
-
         <doors_conf>
-            
-
             <door size="4" type="big"/>
-            
-
             <door size="2" type="normal"/>
-            
-
             <door size="10" type="void"/>
-            
-
             <door size="0" type="wall"/>
-            
-
         </doors_conf>
-        
-
         <doors>
-            
-
             <door direction="up" type="wall"/>
-            
-
             <door direction="down" type="wall"/>
-            
-
             <door direction="left" type="wall"/>
-            
-
             <door direction="right" type="wall"/>
-            
-
         </doors>
         <signalisation direction="N/A"/>
     </default>
-
     <rooms>
         <room id="0">
             <doors>

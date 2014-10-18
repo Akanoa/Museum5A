@@ -6,7 +6,8 @@ import random
 import os, os.path
 import xml.dom.minidom as minidom
 import imp
-from math import sqrt
+from math import sqrt, floor
+import StringIO
 
 from maze import *
 from mazeView import *
@@ -15,7 +16,7 @@ class Generator:
 	'''
 	generation of xml file
 	'''
-	def __init__(self, config="generatedMuseum.xml"):
+	def __init__(self, config="defaultMuseum"):
 		self.root = ET.Element('xml')
 
 		self.defautPaintingPath = "datas/textures/paintings/"
@@ -23,18 +24,19 @@ class Generator:
 
 		self.defaultTypeDoors = ["big","normal","void"]
 
-		
+		self.prepareDefaultParameters()
+		self.generateNewMuseum()
+		self.exportToFile(config)
 
 	def prepareDefaultParameters(self):
 		'''
 		Write defaut parameters on top of the tree
 		'''
-		tree = ET.parse("museum.xml")
+		tree = ET.parse("museum.xml")					##Default params
 		doc = tree.getroot()
 		defaultParams = doc.find('default')
 		dimensions = defaultParams.find('dimensions')
 		self.defaultNb = int (sqrt(int(dimensions.get("nb"))))
-		print str(self.defaultNb)
 		self.root.append(defaultParams)
 
 
@@ -42,25 +44,26 @@ class Generator:
 		'''
 			Generate a new random museum
 		'''
+		rowsAsked  = self.defaultNb
+		colsAsked = self.defaultNb
+		#Generate a new maze with minimum size
+		searchedPath = floor((rowsAsked * colsAsked) * 0.7)
 
-		#Generate a new maze
-		maze = Maze(self.defaultNb,self.defaultNb)
-		self.memoMaze = maze
+		print "Number of row : " + str(rowsAsked)
+		print "Number of columns : " + str(colsAsked)
+		print "Minimum size asked for the path: " + str(searchedPath)
+
+		generated = maze_search(rowsAsked,colsAsked, searchedPath)
+		maze = self.memoMaze = generated[0]
 		cellList = maze.maze
-
-		#solution path, usefull for signalisation  // TODO
-		maze.solve_maze()
-		path = maze.solutionpath
-		print path
-		print path[1]
+		path = generated[1]
 
 		prepareWall = self.generateWallProperty(maze);
 	
 		rooms = ET.Element('rooms')
 
 		# fetch row
-		print "Number of row :" + str(maze.rows)
-		print "Number of columns :" + str(maze.cols)
+		
 		for i in range(maze.rows):
 			#fetch columns
 			for j in range(maze.cols):
@@ -205,7 +208,6 @@ class Generator:
 				if (index == 0) :
 					return "begin"
 				else :
-					
 					if (index + 1 < len(path)):
 						nextItem = path[index+1]
 						if ((x+1,y) == nextItem):
@@ -222,32 +224,111 @@ class Generator:
 						return "end"
 		return "N/A"
 
-	def exportToFile(self, nameFile = "generatedMuseum.xml"):
-		print "Exporting XML Tree to file : " + nameFile
+	def exportToFile(self, nameFile = "defaultMuseum"):
+		fileDirectory = ""
+		fileName = nameFile + ".xml"
+		fileDirectory = "datas/generated/" + nameFile + "/"
+		self.writeDirectory = fileDirectory
+
+		print "Exporting XML Tree to file : " + fileName + " in directory :" + fileDirectory
+		
+		#check if generated dir exist
+		if not os.path.exists("datas/generated"):
+			os.makedirs("datas/generated")
+
+		#Generated of the directory for given museum if not exist
+		if not os.path.exists(fileDirectory):
+			os.makedirs(fileDirectory)
+
+		#delete all files into the directory ( remove img and xml file )
+		listFiles = os.listdir(fileDirectory)
+		for i in xrange(len(listFiles) ):
+			os.remove(fileDirectory + listFiles[i])
+
+		#format the xml nicely
 		rough_string = ET.tostring(self.root, method="xml", encoding='UTF-8' )
+		buf = StringIO.StringIO(rough_string)
+		bufferLine = buf.readline()
+		resultString = ""
+
+		while len (bufferLine ) > 0:
+			list_char = list(bufferLine)
+			#print list_char
+			while ( len (list_char) > 0):
+				if str(list_char).startswith( '<' ):
+					resultString += str(list_char)
+					print "start with < !"
+				else :
+					list_char.pop(0)
+			bufferLine = buf.readline()
 		reparsed = minidom.parseString(rough_string)
 		reparsed = reparsed.toprettyxml(indent="\t")
-		f = open(nameFile, 'w')
+
+		#Write to file
+		f = open(fileDirectory+ fileName, 'w')
 		f.write(reparsed)
 		f.close()
 		print "Exporting done, new museum generated!"
+
 	def visualizeMuseum(self):
-		print "Trying to launch visualisation of the map of the museum "
+		"""
+			Gestion of the museum's map generation & visualisation
+			NOTE : you need pygame to run this !
+		"""
+		print "\n#######VISUALISATION########\nTrying to launch visualisation of the map of the museum "
 		try:
 			print "Visualisation loaded, you can close it by closing the window"
-			visualize(self.memoMaze)
-			found = True
+			visualize(self.memoMaze, self.writeDirectory)
 		except ImportError:
-			print "Visualisation failed, you need to have pygame installed to visualise the map!"
-			found = False
+			print "<!> ERROR : Visualisation failed, you need to have pygame installed to visualise the map!"
 
 if __name__ == "__main__":
+	usage = "Usage : python generator.py -v param -n 'nameHere'\n\n-v Y/N - Permit visualisation of the output using pygame\n\n-n 'nameHere' - Permit to give a name to your generated file, if not explicitly put it override the default museum\n\n\n NOTE: you must have a pair number of parameters or the script will stop"
+
 	if ( len(argv) <= 1):
-		print "Usage : python generator.py -v true\n\n-v O/N - Permit visualisation of the output using pygame"
+		print usage
 	else:
-		m = Generator()
-		m.prepareDefaultParameters()
-		m.generateNewMuseum()
-		m.exportToFile()
-		if (argv[1] == "-v") & (argv[2] == 'O'):
-			m.visualizeMuseum()
+		launchParameters = argv
+		launchParameters.pop(0) 	#remove name of the script
+		nbOptions = len(launchParameters)
+
+		index = 0
+		listCommands = {}
+		for x in range(0,nbOptions,2):
+			if (x+1 < nbOptions):
+				listCommands[launchParameters[x]] =launchParameters[x+1]
+			else :
+				print usage
+				exit(0)
+
+		#DEFAULT parameters
+		nameMuseum = "defaultMuseum"
+
+		if "-n" in listCommands :
+			nameMuseum = listCommands["-n"]
+			if nameMuseum == "defaultMuseum":
+				print "Vous etes sur le point de remplacer la configuration xml de base, etes vous sur? ( Y/N)"
+				answer = raw_input("Continuer : ") 
+				if answer != "Y":
+					print "aborting...."
+					exit(0)
+			elif os.path.exists("datas/generated/" + nameMuseum):
+				print "Un musee portant ce nom existe deja, voulez-vous le remplacer?"
+				answer = raw_input("Remplacer (Y/N) : ") 
+				if answer != "Y":
+					print "aborting...."
+					exit(0)
+		else :
+			print "Vous etes sur le point de remplacer la configuration xml de base, etes vous sur? ( Y/N)"
+			answer = raw_input("Continuer : ") 
+			if answer != "Y":
+				print "aborting...."
+				exit(0)
+
+		m = Generator(nameMuseum)
+
+		if "-v" in listCommands :
+			if listCommands["-v"] == 'Y':
+				m.visualizeMuseum()
+
+
