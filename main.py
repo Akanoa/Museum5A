@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 
 import pyglet
 from pyglet.gl import *
@@ -34,7 +35,7 @@ def init():
 	textures = loading_textures()
 	setup()
 	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
-	myMuseum = Museum(textures, "generatedMuseum.xml")
+	myMuseum = Museum(textures, "datas/generated/defaultMuseum/defaultMuseum.xml")
 	myMuseum.init()
 
 @window.event
