@@ -109,6 +109,9 @@ class Museum:
 			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
 			glPopMatrix()
 
+	def get_player_position(self):
+		return self.config["default"]["player_position"]
+
 	def __generate_room_config(self):
 		nb_rooms = int(self.default_config.findall('./default/dimensions')[0].get("nb"))
 		width    = int(self.default_config.findall('./default/dimensions')[0].get("width"))
@@ -153,6 +156,19 @@ class Museum:
 			"end"	:	-3,
 			"N/A"	:	-1,
 		}
+
+		room = int(self.default_config.findall("./rooms/room/signalisation[@direction='begin']/..")[0].get('id'))
+		k=0
+		loop = True
+		for i in range(-30, 50, 20):
+			if not loop:
+				break
+			for j in range(-30, 50, 20):
+				if k==room:
+					self.config["default"]["player_position"]=[-j,-2,-i]
+					break
+				k+=1
+		print self.config["default"]["player_position"]
 
 		for room_id in range(nb_rooms):
 			try:

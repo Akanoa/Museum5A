@@ -34,9 +34,10 @@ def init():
 	global myMuseum, myCamera, textures
 	textures = loading_textures()
 	setup()
-	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
 	myMuseum = Museum(textures, "datas/generated/defaultMuseum/defaultMuseum.xml")
 	myMuseum.init()
+	myCamera = camera.FirstPersonCamera(window, position=myMuseum.get_player_position(), mouse_sensitivity=1)
+
 
 @window.event
 def on_resize(width, height):
