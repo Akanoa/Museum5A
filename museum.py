@@ -64,50 +64,29 @@ class Museum:
 		return saved
 
 	def draw(self):
-		#draw ground
-		glPushMatrix()
-		glTranslatef(0,-1,0)
-		glRotatef(90, 1,0,0)
-		glScalef(40, 40,0)
-		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
-		glPopMatrix()
 
-		#draw ceiling
-		"""
-		glPushMatrix()
-		glTranslatef(0, self.config["default"]["dimensions"][2],0)
-		glRotatef(90, 1,0,0)
-		glScalef(40, 40,0)
-		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
-		glPopMatrix()
-
-		#draw painting
-		glPushMatrix()
-		glTranslatef(4,1,0)
-		draw_painting(self.textures["paintings"]["4"]["kyudoka-japanese-archers-c1860-photo-chopshop.jpg"], (642,800))
-		glPopMatrix()
-
-		"""
-		#draw test room
-
+		#draw rooms
 		k=0
 		for i in range(-30, 50, 20):
 
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
+				draw_room(gap=self.config[k]["doors"], textures_=[self.config[k]["textures"]["wall"]]*4+[self.config[k]["textures"]["ground"], self.config[k]["textures"]["ceiling"]], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
 				glPopMatrix()
 				k+=1
 
 
-		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
+		# draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
-		for i in range(3):
-			glPushMatrix()
-			glTranslatef(i*10, 0, -10)
-			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
-			glPopMatrix()
+		# for i in range(3):
+		# 	glPushMatrix()
+		# 	glTranslatef(i*10, 0, -10)
+		# 	draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
+		# 	glPopMatrix()
+
+	def get_player_position(self):
+		return self.config["default"]["player_position"]
 
 	def __generate_room_config(self):
 		nb_rooms = int(self.default_config.findall('./default/dimensions')[0].get("nb"))
@@ -153,6 +132,18 @@ class Museum:
 			"end"	:	-3,
 			"N/A"	:	-1,
 		}
+
+		room = int(self.default_config.findall("./rooms/room/signalisation[@direction='begin']/..")[0].get('id'))
+		k=0
+		loop = True
+		for i in range(-30, 50, 20):
+			if not loop:
+				break
+			for j in range(-30, 50, 20):
+				if k==room:
+					self.config["default"]["player_position"]=[-j,-2,-i]
+					break
+				k+=1
 
 		for room_id in range(nb_rooms):
 			try:
@@ -224,11 +215,11 @@ class Museum:
 				#set textures
 				self.config[room_id]["textures"]={}
 				#	set wall textures
-				self.config[room_id]["textures"]["wall"] = self.__override_default(room_id, "/textures/texture[@type='walls']").get("path")
+				self.config[room_id]["textures"]["wall"] = self.textures["wall"][self.__override_default(room_id, "/textures/texture[@type='walls']").get("path")]
 				#	set ground textures
-				self.config[room_id]["textures"]["ground"] = self.__override_default(room_id, "/textures/texture[@type='ground']").get("path")
+				self.config[room_id]["textures"]["ground"] = self.textures["ground"][self.__override_default(room_id, "/textures/texture[@type='ground']").get("path")]
 				#	set floor textures
-				self.config[room_id]["textures"]["ceiling"] = self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")
+				self.config[room_id]["textures"]["ceiling"] = self.textures["ceiling"][self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")]
 
 			except Exception,e:
 				traceback.print_exc()
