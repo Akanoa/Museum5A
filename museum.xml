@@ -26,6 +26,7 @@
         <room id="0">
             <doors>
                 <door direction="right" type="void"/>
+                <door direction="up" type="void"/>
             </doors>
             <paintings nb="3" path="3"/>
         </room>

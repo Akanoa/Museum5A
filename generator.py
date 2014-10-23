@@ -158,15 +158,15 @@ class Generator:
 			format return [pathToGround, pathToCeiling, [left,right,up,down]]
 		'''
 		resultRand = random.randint(0, len(self.listTexGround)-1)
-		pathToGround = self.defaultTexturesGround + self.listTexGround[resultRand]
+		pathToGround = self.listTexGround[resultRand]
 
 		resultRand = random.randint(0, len(self.listTexCeiling)-1)
-		pathToCeiling = self.defaultTexturesWall + self.listTexCeiling[resultRand]
+		pathToCeiling = self.listTexCeiling[resultRand]
 
 		wallList = []
 		for i in range(4):
 			resultRand = random.randint(0, len(self.listTexWall)-1)
-			wallList.append( self.defaultTexturesGround + self.listTexWall[resultRand])
+			wallList.append(self.listTexWall[resultRand])
 
 		return [pathToGround,pathToCeiling,wallList]
 
@@ -210,25 +210,33 @@ class Generator:
 		##########Room Texture set##########
 		textures = ET.Element('textures')
 
-		ground = ET.Element('ground')
-		ground.set("texture",roomTextureSet[0])
+		ground = ET.Element("texture")
+		ground.set("path",roomTextureSet[0])
+		ground.set("type", "ground")
 		textures.append(ground)
 
-		ceil = ET.Element('ceiling')
-		ceil.set("texture",roomTextureSet[1])
+		ceil = ET.Element("texture")
+		ceil.set("path",roomTextureSet[1])
+		ceil.set("type", "ceiling")
 		textures.append(ceil)
 
+		walls = ET.Element("walls")
+
 		for i in range(len(roomTextureSet[2])):
-			wall = ET.Element(self.varToStr(i))
-			wall.set("texture",roomTextureSet[2][i])
-			textures.append(wall)
+			wall = ET.Element("wall")
+			wall.set("path",roomTextureSet[2][i])
+			wall.set("type",self.varToStr(i))
+			walls.append(wall)
+
+		textures.append(walls)
 
 		room.append(textures)
 
 		###########Signalisation############
-		signalisation = ET.Element('signalisation')
-		signalisation.set("direction",signal)
-		room.append(signalisation)
+		if (signal != "N/A"):		#default parameters, don't write
+			signalisation = ET.Element('signalisation')
+			signalisation.set("direction",signal)
+			room.append(signalisation)
 
 		return room
 

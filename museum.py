@@ -6,16 +6,17 @@
 #------------------------------------------------
 
 import xml.etree.ElementTree as ET
-import os
+import os, sys
 import random
 import struct
-
+import traceback
 import pprint
 
 import pyglet
 from pyglet.gl import *
 
-from primitives import draw_cube, draw_plane, draw_wall, draw_room
+
+from primitives import draw_cube, draw_plane, draw_wall, draw_room, draw_painting, set_gap_association
 
 class Museum:
 
@@ -41,7 +42,8 @@ class Museum:
 		path to parameters in config dict
 		'''
 		self.__generate_room_config()
-		pprint.pprint(self.config)
+		# pprint.pprint(self.config)
+		# pprint.pprint(self.textures)
 
 	def __override_default(self, room_id, args):
 		"""
@@ -62,74 +64,30 @@ class Museum:
 
 		return saved
 
-	def jpeg_res(self, filename):
-		""""This function prints the resolution
-		of the jpeg image file passed into it"""
-
-		# open image for reading in binary mode
-		width = 0
-		height = 0
-		with open(filename,'rb') as jpeg:
-			jpeg.read(2)
-			b = jpeg.read(1)
-			try:
-				while (b and ord(b) != 0xDA):
-					while (ord(b) != 0xFF): b = jpeg.read(1)
-					while (ord(b) == 0xFF): b = jpeg.read(1)
-					if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
-						jpeg.read(3)
-						h, w = struct.unpack(">HH", jpeg.read(4))
-						break
-					else:
-						jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
-					b = jpeg.read(1)
-				width = int(w)
-				height = int(h)
-			except struct.error:
-				pass
-			except ValueError:
-				pass
-
-			return (width, height)
-
 	def draw(self):
-		#draw ground
-		glPushMatrix()
-		glTranslatef(0,-1,0)
-		glRotatef(90, 1,0,0)
-		glScalef(40, 40,0)
-		draw_plane(self.textures["ground"]["ground1.jpg"], scale_uv=(40,40))
-		glPopMatrix()
 
-		#draw ceiling
-		"""
-		glPushMatrix()
-		glTranslatef(0, self.config["default"]["dimensions"][2],0)
-		glRotatef(90, 1,0,0)
-		glScalef(40, 40,0)
-		draw_plane(self.textures["ceiling"]["ceiling1.jpg"], scale_uv=(80,80))
-		glPopMatrix()
-		"""
-		#draw test room
-
+		#draw rooms
 		k=0
 		for i in range(-30, 50, 20):
 
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"] )
+				draw_room(gap=self.config[k]["doors"], textures_=[self.config[k]["textures"]["wall"]]*4+[self.config[k]["textures"]["ground"], self.config[k]["textures"]["ceiling"]], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
 				glPopMatrix()
 				k+=1
 
 
-		draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
+		# draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
 
-		for i in range(3):
-			glPushMatrix()
-			glTranslatef(i*10, 0, -10)
-			draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
-			glPopMatrix()
+		# for i in range(3):
+		# 	glPushMatrix()
+		# 	glTranslatef(i*10, 0, -10)
+		# 	draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
+		# 	glPopMatrix()
+
+	def get_player_position(self):
+		return self.config["default"]["player_position"]
 
 	def __generate_room_config(self):
 		nb_rooms = int(self.default_config.findall('./default/dimensions')[0].get("nb"))
@@ -157,6 +115,15 @@ class Museum:
 			"wall"   : int(self.default_config.findall("./default/doors_conf/door[@type='wall']")[0].get("size"))
 		}
 
+		paint_asso = {
+			"wall"  : 3,
+			"big"   : 2,
+			"normal": 2,
+			"void"  : 2
+		}
+
+		set_gap_association(gap_association)
+
 		signal_association ={
 			"up"	:	180,
 			"down"	:	0,		
@@ -167,6 +134,18 @@ class Museum:
 			"N/A"	:	-1,
 		}
 
+		room = int(self.default_config.findall("./rooms/room/signalisation[@direction='begin']/..")[0].get('id'))
+		k=0
+		loop = True
+		for i in range(-30, 50, 20):
+			if not loop:
+				break
+			for j in range(-30, 50, 20):
+				if k==room:
+					self.config["default"]["player_position"]=[-j,-2,-i]
+					break
+				k+=1
+
 		for room_id in range(nb_rooms):
 			try:
 				#set room
@@ -174,36 +153,60 @@ class Museum:
 				#set northern wall
 				self.config[room_id]["doors"] = []
 				door = self.__override_default(room_id, "/doors/door[@direction='up']")
-				self.config[room_id]["doors"].append(gap_association[door.get("type")])
+				self.config[room_id]["doors"].append(door.get("type"))
 				#set southern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='down']")
-				self.config[room_id]["doors"].append(gap_association[door.get("type")])
+				self.config[room_id]["doors"].append(door.get("type"))
 				#\tset eastern wall
 				door = self.__override_default(room_id, "/doors/door[@direction='left']")
-				self.config[room_id]["doors"].append(gap_association[door.get("type")])
+				self.config[room_id]["doors"].append(door.get("type"))
 				#set western wall
 				door = self.__override_default(room_id, "/doors/door[@direction='right']")
-				self.config[room_id]["doors"].append(gap_association[door.get("type")])
+				self.config[room_id]["doors"].append(door.get("type"))
 
 				#signalisation
 				signalisation = self.__override_default(room_id, "/signalisation").get("direction")
 				self.config[room_id]["signalisation"] = signal_association[signalisation]
 
-				#textures
-				textures =  self.__override_default(room_id, "/textures")
-				print textures
-
 				#self.config[room_id]["textures"]
 
 				#set numbers of paintings
-				nb = int(self.__override_default(room_id, "/paintings").get("nb"))
-				absolute_path = "datas/textures/paintings/"+self.__override_default(room_id, "/paintings").get("path")
-				list_paintings = os.listdir(absolute_path)
-				self.config[room_id]["paintings"]=[]
+				nb = int(self.__override_default(room_id, "paintings").get("nb"))
+				absolute_path = os.sep.join(["datas","textures","paintings", ""])+self.__override_default(room_id, "/paintings").get("path")
+				list_paintings_ = os.listdir(absolute_path)
+				list_paintings = []
 				for i in range(nb):
-					path2 = absolute_path[-1]+os.sep+random.choice(list_paintings)
-					path = absolute_path+os.sep+random.choice(list_paintings)
-					self.config[room_id]["paintings"].append([path2, self.jpeg_res(path)])
+					path = absolute_path[-1]+os.sep+random.choice(list_paintings_)
+					list_paintings.append(path)
+
+				paintings = {0: [[], 3], 1: [[], 3], 2: [[], 3], 3: [[], 3]}
+				for key in paintings.keys():
+					paintings[key][1]=paint_asso[self.config[room_id]["doors"][key]]
+
+				run = True
+				potential = range(4)
+
+				while run:
+					for wall in potential:
+						#if no paintings left
+						if len(list_paintings)==0:
+							run = False
+							break
+						if paintings[wall][1]==0:
+							potential.pop(potential.index(wall))
+							if len(potential)==0:
+								# print "no more wall available"
+								run = False
+								break
+							continue
+						chosen = list_paintings.pop(list_paintings.index(random.choice(list_paintings))).split(os.sep)
+						# print chosen
+						# sys.exit(0)
+						paintings[wall][0].append(self.textures["paintings"][chosen[0]][chosen[1]])
+						paintings[wall][1]-=1
+						break
+
+				self.config[room_id]["paintings"]=[paintings[key][0] for key in paintings.keys()]
 
 				#set dimensions
 				width    = int(self.__override_default(room_id, "dimensions").get("width"))
@@ -216,12 +219,12 @@ class Museum:
 				#set textures
 				self.config[room_id]["textures"]={}
 				#	set wall textures
-				self.config[room_id]["textures"]["wall"] = self.__override_default(room_id, "/textures/texture[@type='walls']").get("path")
+				self.config[room_id]["textures"]["wall"] = self.textures["wall"][self.__override_default(room_id, "/textures/texture[@type='walls']").get("path")]
 				#	set ground textures
-				self.config[room_id]["textures"]["ground"] = self.__override_default(room_id, "/textures/texture[@type='ground']").get("path")
+				self.config[room_id]["textures"]["ground"] = self.textures["ground"][self.__override_default(room_id, "/textures/texture[@type='ground']").get("path")]
 				#	set floor textures
-				self.config[room_id]["textures"]["ceiling"] = self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")
+				self.config[room_id]["textures"]["ceiling"] = self.textures["ceiling"][self.__override_default(room_id, "/textures/texture[@type='ceiling']").get("path")]
 
 			except Exception,e:
-				print e
+				traceback.print_exc()
 				pass

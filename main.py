@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 
 import pyglet
 from pyglet.gl import *
@@ -6,9 +7,10 @@ from pyglet.gl import *
 from primitives import loading_textures
 
 from museum import Museum
+from sys import argv
+import os.path
 
 import camera
-import os
 
 myMuseum = None 
 myCamera = None
@@ -34,9 +36,11 @@ def init(pathMuseum):
 	global myMuseum, myCamera, textures
 	textures = loading_textures()
 	setup()
-	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
+
 	myMuseum = Museum(textures, pathMuseum)
 	myMuseum.init()
+	myCamera = camera.FirstPersonCamera(window, position=myMuseum.get_player_position(), mouse_sensitivity=1)
+
 
 @window.event
 def on_resize(width, height):
@@ -74,10 +78,12 @@ if __name__ == '__main__' :
 	#default generated path 
 	generatedPath = "datas/generated/"
 	#DEFAULT parameters
-	nameMuseum = "defaultMuseum"
+	defaultMuseum = "defaultMuseum"
+	nameMuseum = defaultMuseum
 
 	if ( len(argv) <= 1):
 		print usage
+		print "\n\nLoad default Museum ..."
 	else:
 		launchParameters = argv
 		launchParameters.pop(0) 	#remove name of the script
@@ -93,15 +99,20 @@ if __name__ == '__main__' :
 				exit(0)
 
 		if "-n" in listCommands :
+			nameMuseum = listCommands["-n"]
 			if not os.path.exists("datas/generated/" + nameMuseum):
 				print "Ce musee n'existe pas ! Voulez vous continuer avec la configuration par defaut?"
 				answer = raw_input("Remplacer (Y/N) : ") 
 				if answer != "Y":
 					print "aborting...."
 					exit(0)
+				nameMuseum = defaultMuseum
 
 
-	init(generatedPath + nameMuseum + ".xml")
+	path = generatedPath + nameMuseum + "/" + nameMuseum + ".xml"
+	print "Loading museum from location :" + path
+	init(path)
+
 	# # La fonction update sera appelee toutes les 30eme de seconde
 	pyglet.clock.schedule_interval(update, 1.0/30.0)
 
