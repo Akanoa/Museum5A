@@ -48,7 +48,7 @@ python main.py -v Y -n "nomDuMusée"
 
 Plan :
 
-![alt tag](http://i.imgur.com/SN7tJLO.png)
+<p align="center">![alt tag](http://i.imgur.com/SN7tJLO.png)<p>
 
 Map générées :
 ![alt tag](http://i.imgur.com/0RZDJBE.png)
