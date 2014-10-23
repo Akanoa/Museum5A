@@ -135,11 +135,12 @@ def draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing
 	glPopMatrix()
 
 
-def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False, paintings=[]):
+def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=default_texture, colors= [[1,0,0]]*6, type_texturing="texture", pediment=False, paintings=[]):
 	#A wall involve two flattened cube separe by a gap in the middle
 	gap_name = gap
 	#draw paintings
 
+	textures_= [textures_]*6
 
 	gap = gap_asso[gap]
 
@@ -148,8 +149,6 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 
 	if gap >= dimensions[0]:
 		return
-
-	#print dimensions
 
 	l = (dimensions[0]-gap)/2.0
 	x1 = -gap/1.0 - l
@@ -194,14 +193,14 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 	glPushMatrix()
 	glTranslatef(x1, 1, 0)
 	glScalef(l, dimensions[1]-1, dimensions[2])
-	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
+	draw_cube(textures_=textures_, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0], dimensions[1]/2))
 	glPopMatrix()
 
 	#draw second doorpost
 	glPushMatrix()
 	glTranslatef(x2, 1, 0)
 	glScalef(l, dimensions[1]-1, dimensions[2])
-	draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0]/(2*l), dimensions[1]))
+	draw_cube(textures_=textures_, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(dimensions[0], dimensions[1]/2))
 	glPopMatrix()
 
 	#draw pediment
@@ -213,7 +212,7 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 		glPushMatrix()
 		glTranslatef(x3, y+1, 0)
 		glScalef(gap, h-1, dimensions[2])
-		draw_cube(textures_=[default_texture]*6, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(gap/2.0, h))
+		draw_cube(textures_=textures_, colors= [[1,0,0]]*6, type_texturing="texture", scale_uv=(gap/2.0, h))
 		glPopMatrix()
 
 
@@ -222,7 +221,6 @@ def draw_wall(gap="wall", dimensions=(10,11,0.1), textures_=[default_texture]*6,
 def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=None, colors= [[[1,0,0]]*6]*4, type_texturing=["texture"]*4, pediment=[False]*4, paintings=[], signalisation=-1):
 	if not textures_:
 		textures_=[[default_texture]*6]*4+[default_texture]*2
-	# pprint.pprint(paintings)
 
 	#draw northern wall
 	dim = dimensions[0]
