@@ -45,6 +45,11 @@ python generator.py -n "nomDuMusée"
 ```bash
 python main.py -v Y -n "nomDuMusée"
 ```
+Plan :
+![alt tag](http://i.imgur.com/SN7tJLO.png)
+
+Map générées :
+![alt tag](http://i.imgur.com/0RZDJBE.png)
 
 Géneration de labyrinthe
 ------------------------
@@ -66,6 +71,12 @@ Pour generer un labyrinthe et obtenir sa visualisation sans passer par le genera
 ```bash
 python mazeView.py 100 100 10 2
 ```
+
+Resultat de la commande 
+```bash
+python mazeView.py 100 100 8 2
+```
+![alt tag](http://i.imgur.com/O77oqIo.png)
 
 Pour plus d'infos sur les algorithmes de génération de labyrinthe
 http://www.astrolog.org/labyrnth/algrithm.htm
