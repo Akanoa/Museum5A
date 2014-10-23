@@ -19,19 +19,19 @@ class Generator:
 	def __init__(self, config="defaultMuseum"):
 		self.root = ET.Element('xml')
 
-		self.defautTexturePath = "datas/textures/"
+		self.texturePath = "datas/textures/"
 
-		self.defautPaintingPath = self.defautTexturePath + "paintings/"
-		self.listPaintings = os.listdir(self.defautPaintingPath)
+		self.paintingPath = self.texturePath + "paintings/"
+		self.listPaintings = os.listdir(self.paintingPath)
 
-		self.defaultTexturesWall = self.defautTexturePath + "wall/" 
-		self.listTexWall = os.listdir(self.defaultTexturesWall)
+		self.texturesWallPath = self.texturePath + "wall/" 
+		self.listTexWall = os.listdir(self.texturesWallPath)
 
-		self.defaultTexturesCeiling = self.defautTexturePath + "ceiling/" 
-		self.listTexCeiling = os.listdir(self.defaultTexturesCeiling)
+		self.texturesCeilingPath = self.texturePath + "ceiling/" 
+		self.listTexCeiling = os.listdir(self.texturesCeilingPath)
 
-		self.defaultTexturesGround = self.defautTexturePath + "ground/" 
-		self.listTexGround= os.listdir(self.defaultTexturesGround)
+		self.texturesGroundPath = self.texturePath + "ground/" 
+		self.listTexGround= os.listdir(self.texturesGroundPath)
 
 		self.defaultTypeDoors = ["big","normal","void"]
 
@@ -46,8 +46,28 @@ class Generator:
 		tree = ET.parse("museum.xml")					##Default params
 		doc = tree.getroot()
 		defaultParams = doc.find('default')
+
 		dimensions = defaultParams.find('dimensions')
-		self.defaultNb = int (sqrt(int(dimensions.get("nb"))))
+		self.defaultDimensionsNb = int (sqrt(int(dimensions.get("nb"))))
+
+		paintings = defaultParams.find('paintings')
+		self.defaultPaintingsPath = paintings.get("path")
+
+		textures = defaultParams.find('textures')
+
+		groundAndCeil = textures.findall("texture")
+		self.defaultGroundTexture = groundAndCeil[0].get("path")
+		self.defaultCeilTexture = groundAndCeil[1].get("path")
+
+		walls = textures.find('walls')
+		listWall = walls.findall('wall')
+		self.defaultWallsTextures = []
+		for i in range(len(listWall)):
+			self.defaultWallsTextures.append(listWall[i].get('path'))
+
+		signalisation = defaultParams.find('signalisation')
+		self.defaultSignalisationDirection = signalisation.get("direction")
+
 		self.root.append(defaultParams)
 
 
@@ -55,8 +75,8 @@ class Generator:
 		'''
 			Generate a new random museum
 		'''
-		rowsAsked  = self.defaultNb
-		colsAsked = self.defaultNb
+		rowsAsked  = self.defaultDimensionsNb
+		colsAsked = self.defaultDimensionsNb
 		#Generate a new maze with minimum size
 		searchedPath = floor((rowsAsked * colsAsked) * 0.7)
 
@@ -74,7 +94,6 @@ class Generator:
 		rooms = ET.Element('rooms')
 
 		# fetch row
-		
 		for i in range(maze.rows):
 			#fetch columns
 			for j in range(maze.cols):
@@ -199,41 +218,52 @@ class Generator:
 		room.append(doors)
 
 		###########Paintings Part###########
-		paintings = ET.Element('paintings')
+		if (paintingSelected != self.defaultPaintingsPath):		#Default Parameters
+			paintings = ET.Element('paintings')
 
-		counter = len([name for name in os.listdir(self.defautPaintingPath + paintingSelected) if os.path.isfile(os.path.join(self.defautPaintingPath + paintingSelected, name))])
+			#old version ; number of textures in files
+			#counter = len([name for name in os.listdir(self.defautPaintingPath + paintingSelected) if os.path.isfile(os.path.join(self.defautPaintingPath + paintingSelected, name))])
 
-		paintings.set("nb",str(counter))
-		paintings.set("path",paintingSelected)
-		room.append(paintings)
+			#new version ; randint
+			counter = random.randrange(4, 15)
+
+			paintings.set("nb",str(counter))
+			paintings.set("path",paintingSelected)
+			room.append(paintings)
 
 		##########Room Texture set##########
 		textures = ET.Element('textures')
+		isTexturesFilled = False
+		isWallsFilled = False
 
-		ground = ET.Element("texture")
-		ground.set("path",roomTextureSet[0])
-		ground.set("type", "ground")
-		textures.append(ground)
+		if roomTextureSet[0] != self.defaultGroundTexture :
+			ground = ET.Element("texture")
+			ground.set("path",roomTextureSet[0])
+			ground.set("type", "ground")
+			textures.append(ground)
+			isTexturesFilled = True
 
-		ceil = ET.Element("texture")
-		ceil.set("path",roomTextureSet[1])
-		ceil.set("type", "ceiling")
-		textures.append(ceil)
+		if roomTextureSet[1] != self.defaultCeilTexture :
+			ceil = ET.Element("texture")
+			ceil.set("path",roomTextureSet[1])
+			ceil.set("type", "ceiling")
+			textures.append(ceil)
+			isTexturesFilled = true
 
 		walls = ET.Element("walls")
-
 		for i in range(len(roomTextureSet[2])):
-			wall = ET.Element("wall")
-			wall.set("path",roomTextureSet[2][i])
-			wall.set("type",self.varToStr(i))
-			walls.append(wall)
+			if roomTextureSet[2][i] != self.defaultWallsTextures[i] :
+				wall = ET.Element("wall")
+				wall.set("path",roomTextureSet[2][i])
+				wall.set("type",self.varToStr(i))
+				walls.append(wall)
+				isWallsFilled = True
 
-		textures.append(walls)
-
-		room.append(textures)
+		if isWallsFilled : textures.append(walls)
+		if isTexturesFilled | isWallsFilled: room.append(textures)
 
 		###########Signalisation############
-		if (signal != "N/A"):		#default parameters, don't write
+		if (signal != self.defaultSignalisationDirection):		#default parameters, don't write
 			signalisation = ET.Element('signalisation')
 			signalisation.set("direction",signal)
 			room.append(signalisation)
@@ -311,22 +341,26 @@ class Generator:
 
 		while len (bufferLine ) > 0:
 			list_char = list(bufferLine)
-			#print list_char
-			while ( len (list_char) > 0):
-				if str(list_char).startswith( '<' ):
-					resultString += str(list_char)
-					print "start with < !"
+			sizeList = len (list_char)
+			while ( sizeList > 0):
+				if list_char[0] ==  '<' :
+					if (list_char[sizeList-1] == '\n') : 
+						del list_char[-1]
+					resultString += "".join(list_char)
+					break;
 				else :
 					list_char.pop(0)
+				sizeList = len (list_char)
 			bufferLine = buf.readline()
-		reparsed = minidom.parseString(rough_string)
+
+		reparsed = minidom.parseString(resultString)
 		reparsed = reparsed.toprettyxml(indent="\t")
 
 		#Write to file
 		f = open(fileDirectory+ fileName, 'w')
 		f.write(reparsed)
 		f.close()
-		print "Exporting done, new museum generated!"
+		print "Exporting done, new museum generated!\n\n"
 
 	def visualizeMuseum(self):
 		"""
