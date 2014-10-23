@@ -6,7 +6,8 @@ Projet réalisé dans le cadre du module REV - ENIB 2014
 
 Contenu du projet & options de lancement
 
-Pour lancer le projet avec le musée par defaut: ( localisé dans datas/generated/defaultMuseum/defaultMuseum.xml
+Pour lancer le projet avec le musée par defaut: ( localisé dans datas/generated/defaultMuseum/defaultMuseum.xml )
+exemple ici : https://github.com/Akanoa/Museum5A/tree/master/datas/generated/defaultMuseum
 
 '''
 python main.py
