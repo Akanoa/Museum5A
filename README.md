@@ -45,7 +45,9 @@ python generator.py -n "nomDuMusée"
 ```bash
 python main.py -v Y -n "nomDuMusée"
 ```
+
 Plan :
+
 ![alt tag](http://i.imgur.com/SN7tJLO.png)
 
 Map générées :
