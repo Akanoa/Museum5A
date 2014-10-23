@@ -4,7 +4,8 @@ Museum5A
 
 Projet réalisé dans le cadre du module REV - ENIB 2014
 
-Contenu du projet & options de lancement
+Programme principal
+-------------------
 
 * Pour lancer le projet avec le musée par defaut: ( localisé dans datas/generated/defaultMuseum/defaultMuseum.xml )
 exemple ici : https://github.com/Akanoa/Museum5A/tree/master/datas/generated/defaultMuseum
@@ -18,6 +19,9 @@ python main.py
 ```
 python main.py -n "nomDuMusée"
 ```
+
+Generation de musée
+------------------=
 
 Les musées sont générés procéduralement en utilisant le script python generator.py
 Il y a également un module de visualisation du musée utilisant pyglet.
@@ -39,3 +43,6 @@ python generator.py -n "nomDuMusée"
 ```
 python main.py -v Y -n "nomDuMusée"
 ```
+
+Generation de labyrynthe
+------------------------
