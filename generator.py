@@ -19,8 +19,19 @@ class Generator:
 	def __init__(self, config="defaultMuseum"):
 		self.root = ET.Element('xml')
 
-		self.defautPaintingPath = "datas/textures/paintings/"
+		self.defautTexturePath = "datas/textures/"
+
+		self.defautPaintingPath = self.defautTexturePath + "paintings/"
 		self.listPaintings = os.listdir(self.defautPaintingPath)
+
+		self.defaultTexturesWall = self.defautTexturePath + "wall/" 
+		self.listTexWall = os.listdir(self.defaultTexturesWall)
+
+		self.defaultTexturesCeiling = self.defautTexturePath + "ceiling/" 
+		self.listTexCeiling = os.listdir(self.defaultTexturesCeiling)
+
+		self.defaultTexturesGround = self.defautTexturePath + "ground/" 
+		self.listTexGround= os.listdir(self.defaultTexturesGround)
 
 		self.defaultTypeDoors = ["big","normal","void"]
 
@@ -73,6 +84,9 @@ class Generator:
 				#Select a set of paintings, get path to textures directory
 				paintingSelected = self.choosePaintingSet()
 
+				#Select a set of textures for ceiling, ground and wa;;s
+				roomTextureSet = self.chooseRoomTexture()
+
 				#calculate new id
 				actualID = i * maze.rows + j
 
@@ -80,7 +94,7 @@ class Generator:
 				signalisation = self.obtainSignalisation(path,i,j)
 
 				#generate xml
-				room = self.generateRoomXml(actualID, listWall, paintingSelected, signalisation)
+				room = self.generateRoomXml(actualID, listWall, paintingSelected, roomTextureSet, signalisation)
 
 				#add it to root xml
 				rooms.append(room)
@@ -138,6 +152,24 @@ class Generator:
 
 		return paintingSet
 
+	def chooseRoomTexture(self):
+		'''
+			Return textures data for the current room
+			format return [pathToGround, pathToCeiling, [left,right,up,down]]
+		'''
+		resultRand = random.randint(0, len(self.listTexGround)-1)
+		pathToGround = self.defaultTexturesGround + self.listTexGround[resultRand]
+
+		resultRand = random.randint(0, len(self.listTexCeiling)-1)
+		pathToCeiling = self.defaultTexturesWall + self.listTexCeiling[resultRand]
+
+		wallList = []
+		for i in range(4):
+			resultRand = random.randint(0, len(self.listTexWall)-1)
+			wallList.append( self.defaultTexturesGround + self.listTexWall[resultRand])
+
+		return [pathToGround,pathToCeiling,wallList]
+
 	def chooseDoorType(self):
 		'''
 			return a door type choosen randomy
@@ -146,7 +178,7 @@ class Generator:
 		doorChoosen = self.defaultTypeDoors[resultRand]
 		return doorChoosen
 
-	def generateRoomXml(self,id,listWall, paintingSelected, signal):
+	def generateRoomXml(self,id,listWall, paintingSelected, roomTextureSet, signal):
 		'''
 			Generate XMl tree of a room using the given parameters
 		'''
@@ -174,6 +206,24 @@ class Generator:
 		paintings.set("nb",str(counter))
 		paintings.set("path",paintingSelected)
 		room.append(paintings)
+
+		##########Room Texture set##########
+		textures = ET.Element('textures')
+
+		ground = ET.Element('ground')
+		ground.set("texture",roomTextureSet[0])
+		textures.append(ground)
+
+		ceil = ET.Element('ceiling')
+		ceil.set("texture",roomTextureSet[1])
+		textures.append(ceil)
+
+		for i in range(len(roomTextureSet[2])):
+			wall = ET.Element(self.varToStr(i))
+			wall.set("texture",roomTextureSet[2][i])
+			textures.append(wall)
+
+		room.append(textures)
 
 		###########Signalisation############
 		signalisation = ET.Element('signalisation')

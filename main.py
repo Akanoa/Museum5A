@@ -8,6 +8,7 @@ from primitives import loading_textures
 from museum import Museum
 
 import camera
+import os
 
 myMuseum = None 
 myCamera = None
@@ -29,12 +30,12 @@ def setup():
 	glAlphaFunc(GL_GREATER,0.4)
 	glEnable(GL_ALPHA_TEST)
 
-def init():
+def init(pathMuseum):
 	global myMuseum, myCamera, textures
 	textures = loading_textures()
 	setup()
 	myCamera = camera.FirstPersonCamera(window, position=(0,0,-5), mouse_sensitivity=1)
-	myMuseum = Museum(textures, "generatedMuseum.xml")
+	myMuseum = Museum(textures, pathMuseum)
 	myMuseum.init()
 
 @window.event
@@ -68,8 +69,39 @@ def update(dt):
 
 
 if __name__ == '__main__' : 
-	print "Hello World"
-	init()
+	usage = "Usage : python main.py -n 'nameHere'\n\n-n 'nameHere' - name of the museum you want to load, if not explicitly put it will choose the defaultMuseum\n\n\n NOTE: you must have a pair number of parameters or the script will stop"
+
+	#default generated path 
+	generatedPath = "datas/generated/"
+	#DEFAULT parameters
+	nameMuseum = "defaultMuseum"
+
+	if ( len(argv) <= 1):
+		print usage
+	else:
+		launchParameters = argv
+		launchParameters.pop(0) 	#remove name of the script
+		nbOptions = len(launchParameters)
+
+		index = 0
+		listCommands = {}
+		for x in range(0,nbOptions,2):
+			if (x+1 < nbOptions):
+				listCommands[launchParameters[x]] =launchParameters[x+1]
+			else :
+				print usage
+				exit(0)
+
+		if "-n" in listCommands :
+			if not os.path.exists("datas/generated/" + nameMuseum):
+				print "Ce musee n'existe pas ! Voulez vous continuer avec la configuration par defaut?"
+				answer = raw_input("Remplacer (Y/N) : ") 
+				if answer != "Y":
+					print "aborting...."
+					exit(0)
+
+
+	init(generatedPath + nameMuseum + ".xml")
 	# # La fonction update sera appelee toutes les 30eme de seconde
 	pyglet.clock.schedule_interval(update, 1.0/30.0)
 

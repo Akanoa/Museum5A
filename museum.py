@@ -185,8 +185,15 @@ class Museum:
 				door = self.__override_default(room_id, "/doors/door[@direction='right']")
 				self.config[room_id]["doors"].append(gap_association[door.get("type")])
 
+				#signalisation
 				signalisation = self.__override_default(room_id, "/signalisation").get("direction")
 				self.config[room_id]["signalisation"] = signal_association[signalisation]
+
+				#textures
+				textures =  self.__override_default(room_id, "/textures")
+				print textures
+
+				#self.config[room_id]["textures"]
 
 				#set numbers of paintings
 				nb = int(self.__override_default(room_id, "/paintings").get("nb"))
