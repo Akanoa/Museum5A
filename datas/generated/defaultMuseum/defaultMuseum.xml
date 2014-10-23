@@ -69,53 +69,111 @@
 	<rooms>
 		<room id="0">
 			<doors>
-				<door direction="right" type="big"/>
+				<door direction="right" type="void"/>
 				<door direction="down" type="big"/>
 			</doors>
-			<paintings nb="5" path="8"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="4" path="6"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="texture-crepis-c.jpg" type="up"/>
+					<wall path="texture-crepis-c.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="right"/>
 		</room>
 		<room id="1">
 			<doors>
 				<door direction="left" type="void"/>
+				<door direction="right" type="void"/>
 			</doors>
-			<paintings nb="4" path="7"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="3" path="9"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="wall2.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="texture-crepis-c.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="up"/>
 		</room>
 		<room id="2">
 			<doors>
 				<door direction="left" type="void"/>
-				<door direction="right" type="void"/>
 				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="5" path="8"/>
-			<signalisation direction="right"/>
+			<paintings nb="4" path="5"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="up"/>
 		</room>
 		<room id="3">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="down" type="big"/>
 			</doors>
-			<paintings nb="4" path="7"/>
-			<signalisation direction="up"/>
+			<paintings nb="5" path="8"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="texture-crepis-c.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall2.jpg" type="down"/>
+				</walls>
+			</textures>
 		</room>
 		<room id="4">
 			<doors>
 				<door direction="up" type="void"/>
-				<door direction="down" type="big"/>
+				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="5" path="8"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="4" path="2"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="texture-crepis-c.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall2.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="right"/>
 		</room>
 		<room id="5">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="right" type="void"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="big"/>
 			</doors>
 			<paintings nb="4" path="5"/>
-			<signalisation direction="right"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="begin"/>
 		</room>
 		<room id="6">
 			<doors>
@@ -123,7 +181,17 @@
 				<door direction="up" type="void"/>
 			</doors>
 			<paintings nb="5" path="4"/>
-			<signalisation direction="up"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="texture-crepis-c.jpg" type="left"/>
+					<wall path="wall2.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall2.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="left"/>
 		</room>
 		<room id="7">
 			<doors>
@@ -131,34 +199,72 @@
 				<door direction="up" type="void"/>
 				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="4" path="5"/>
-			<signalisation direction="left"/>
+			<paintings nb="3" path="9"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="wall2.jpg" type="up"/>
+					<wall path="texture-crepis-c.jpg" type="down"/>
+				</walls>
+			</textures>
 		</room>
 		<room id="8">
 			<doors>
-				<door direction="right" type="void"/>
+				<door direction="right" type="normal"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="normal"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="end"/>
+			<paintings nb="4" path="3"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="wall2.jpg" type="right"/>
+					<wall path="wall2.jpg" type="up"/>
+					<wall path="texture-crepis-c.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="down"/>
 		</room>
 		<room id="9">
 			<doors>
 				<door direction="left" type="void"/>
+				<door direction="right" type="big"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="6"/>
-			<signalisation direction="up"/>
+			<paintings nb="4" path="5"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="wall2.jpg" type="right"/>
+					<wall path="wall2.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="down"/>
 		</room>
 		<room id="10">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="right" type="void"/>
 				<door direction="up" type="void"/>
-				<door direction="down" type="void"/>
 			</doors>
-			<paintings nb="4" path="5"/>
+			<paintings nb="4" path="7"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="texture-crepis-c.jpg" type="left"/>
+					<wall path="wall2.jpg" type="right"/>
+					<wall path="texture-crepis-c.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
 			<signalisation direction="down"/>
 		</room>
 		<room id="11">
@@ -167,40 +273,90 @@
 				<door direction="up" type="void"/>
 				<door direction="down" type="big"/>
 			</doors>
-			<paintings nb="4" path="5"/>
-			<signalisation direction="left"/>
+			<paintings nb="4" path="1"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="texture-crepis-c.jpg" type="left"/>
+					<wall path="texture-crepis-c.jpg" type="right"/>
+					<wall path="wall2.jpg" type="up"/>
+					<wall path="wall2.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="right"/>
 		</room>
 		<room id="12">
 			<doors>
+				<door direction="right" type="normal"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="1"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="4" path="3"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="texture-crepis-c.jpg" type="down"/>
+				</walls>
+			</textures>
 		</room>
 		<room id="13">
 			<doors>
 				<door direction="left" type="void"/>
-				<door direction="right" type="void"/>
+				<door direction="right" type="big"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="6"/>
-			<signalisation direction="begin"/>
+			<paintings nb="4" path="3"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="texture-crepis-c.jpg" type="left"/>
+					<wall path="texture-crepis-c.jpg" type="right"/>
+					<wall path="texture-crepis-c.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
 		</room>
 		<room id="14">
 			<doors>
 				<door direction="left" type="void"/>
+				<door direction="right" type="normal"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="3"/>
-			<signalisation direction="left"/>
+			<paintings nb="4" path="7"/>
+			<textures>
+				<texture path="ground1.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall1.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="texture-crepis-c.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="end"/>
 		</room>
 		<room id="15">
 			<doors>
 				<door direction="left" type="void"/>
 				<door direction="up" type="void"/>
 			</doors>
-			<paintings nb="4" path="2"/>
-			<signalisation direction="N/A"/>
+			<paintings nb="5" path="4"/>
+			<textures>
+				<texture path="ground2.jpg" type="ground"/>
+				<texture path="ceiling1.jpg" type="ceiling"/>
+				<walls>
+					<wall path="wall2.jpg" type="left"/>
+					<wall path="wall1.jpg" type="right"/>
+					<wall path="wall1.jpg" type="up"/>
+					<wall path="wall1.jpg" type="down"/>
+				</walls>
+			</textures>
+			<signalisation direction="up"/>
 		</room>
 	</rooms>
 </xml>
