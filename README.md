@@ -44,11 +44,11 @@ python generator.py -n "nomDuMusée"
 python main.py -v Y -n "nomDuMusée"
 ```
 
-Géneration de labyrynthe
+Géneration de labyrinthe
 ------------------------
 
-La génération du musée s'appuie sur un algorythme générant un labyrinthe.
-Cet algorythme a été modifié pour les besoins du projet mais est disponible ici dans son état original :
+La génération du musée s'appuie sur un algorithme générant un labyrinthe.
+Cet algorithme a été modifié pour les besoins du projet mais est disponible ici dans son état original :
 http://thelinuxchronicles.blogspot.fr/2012/07/python-maze-generation-and-solution.html
 
 Le fichier maze.py permet de générer un labyrinthe tandis que le fichier mazeView.py permet d'obtenir une visualisation du labyrinthe via pygame ( et la génération des fichiers de map servant à se reperer dans le musée ( implémentation à venir ))
@@ -58,12 +58,12 @@ Pour obtenir l'aide :
 python mazeView.py -h 
 ```
 
-Pour generer un labyrynthe et obtenir sa visualisation sans passer par le generateur :
+Pour generer un labyrinthe et obtenir sa visualisation sans passer par le generateur :
 [rows, cols, sizeCell, sizeWall]
 
 ```
 python mazeView.py 100 100 10 2
 ```
 
-Pour plus d'infos sur les algorythmes de génération de labyrinthe
+Pour plus d'infos sur les algorithmes de génération de labyrinthe
 http://www.astrolog.org/labyrnth/algrithm.htm
