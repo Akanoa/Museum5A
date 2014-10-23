@@ -10,7 +10,7 @@ Programme principal
 * Pour lancer le projet avec le musée par defaut: ( localisé dans datas/generated/defaultMuseum/defaultMuseum.xml )
 exemple ici : https://github.com/Akanoa/Museum5A/tree/master/datas/generated/defaultMuseum
 
-```
+```shell 
 python main.py
 ```
 
