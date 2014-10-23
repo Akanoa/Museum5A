@@ -1,6 +1,8 @@
 Museum5A
 ========
 
+![alt tag](http://i.imgur.com/VHui7sD.jpg)
+
 
 Projet réalisé dans le cadre du module REV - ENIB 2014
 
