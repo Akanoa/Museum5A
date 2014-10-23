@@ -1,7 +1,7 @@
 Museum5A
 ========
 
-![alt tag](http://i.imgur.com/VHui7sD.jpg)
+<p align="center">![alt tag](http://i.imgur.com/VHui7sD.jpg)</p>
 
 
 Projet réalisé dans le cadre du module REV - ENIB 2014
@@ -48,10 +48,10 @@ python main.py -v Y -n "nomDuMusée"
 
 Plan :
 
-<p align="center">![alt tag](http://i.imgur.com/SN7tJLO.png)<p>
+<p align="center">![alt tag](http://i.imgur.com/SN7tJLO.png)</p>
 
 Map générées :
-![alt tag](http://i.imgur.com/0RZDJBE.png)
+<p align="center">![alt tag](http://i.imgur.com/0RZDJBE.png)</p>
 
 Géneration de labyrinthe
 ------------------------
@@ -78,7 +78,7 @@ Resultat de la commande
 ```bash
 python mazeView.py 100 100 8 2
 ```
-![alt tag](http://i.imgur.com/O77oqIo.png)
+<p align="center">![alt tag](http://i.imgur.com/O77oqIo.png)</p>
 
 Pour plus d'infos sur les algorithmes de génération de labyrinthe
 http://www.astrolog.org/labyrnth/algrithm.htm
