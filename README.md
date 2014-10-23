@@ -20,7 +20,7 @@ python main.py
 python main.py -n "nomDuMusée"
 ```
 
-Generation de musée
+Géneration de musée
 -------------------
 
 Les musées sont générés procéduralement en utilisant le script python generator.py
@@ -44,7 +44,7 @@ python generator.py -n "nomDuMusée"
 python main.py -v Y -n "nomDuMusée"
 ```
 
-Generation de labyrynthe
+Géneration de labyrynthe
 ------------------------
 
 La génération du musée s'appuie sur un algorythme générant un labyrinthe.
