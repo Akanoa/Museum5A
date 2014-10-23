@@ -4,10 +4,15 @@
         <dimensions height="4" length="10" nb="16" thick="0.1" width="10"/>
         <paintings nb="4" path="1"/>
         <textures>
-            <texture path="wall1.jpg" type="walls"/>
-            <texture path="ground1.jpg" type="ground"/>
-            <texture path="ceiling1.jpg" type="ceiling"/>
-        </textures>
+                <texture path="ground1.jpg" type="ground"/>
+                <texture path="ceiling1.jpg" type="ceiling"/>
+                <walls>
+                    <wall path="wall1.jpg" type="left"/>
+                    <wall path="wall1.jpg" type="right"/>
+                    <wall path="wall1.jpg" type="up"/>
+                    <wall path="wall1.jpg" type="down"/>
+                </walls>
+            </textures>
         <doors_conf>
             <door size="4" type="big"/>
             <door size="2" type="normal"/>
