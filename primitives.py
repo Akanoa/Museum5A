@@ -265,7 +265,7 @@ def draw_room(gap=[0]*4, dimensions=[[10,11,0.1]]*4, textures_=None, colors= [[[
 	glPushMatrix()
 	glTranslatef(0, dimensions[1][1],0)
 	glRotatef(90, 1,0,0)
-	glScalef(dimensions[0][0], dimensions[1][0],0,0)
+	glScalef(dimensions[0][0], dimensions[1][0],0)
 	draw_plane(texture=textures_[5], scale_uv=(dimensions[0][0],dimensions[1][0]))
 	glPopMatrix()
 
