@@ -42,8 +42,6 @@ class Museum:
 		path to parameters in config dict
 		'''
 		self.__generate_room_config()
-		# pprint.pprint(self.config)
-		# pprint.pprint(self.textures)
 
 	def __override_default(self, room_id, args):
 		"""
@@ -73,18 +71,9 @@ class Museum:
 			for j in range(-30, 50, 20):
 				glPushMatrix()
 				glTranslatef(j, 0 ,i)
-				draw_room(gap=self.config[k]["doors"], textures_=[self.config[k]["textures"]["wall"]]*4+[self.config[k]["textures"]["ground"], self.config[k]["textures"]["ceiling"]], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
+				draw_room(gap=self.config[k]["doors"], textures_=self.config[k]["textures"]["walls"]+[self.config[k]["textures"]["ground"], self.config[k]["textures"]["ceiling"]], dimensions=[[self.config[k]["dimensions"][e] for e in [0,2,3]]]*4, pediment=[False]*4, signalisation= self.config[k]["signalisation"], paintings=self.config[k]["paintings"] )
 				glPopMatrix()
 				k+=1
-
-
-		# draw_cube(colors=[(1,0.5,1), (0,0,1), (0,1,1), (1,0,0), (1,0,1),(1,1,0)], type_texturing='color')
-
-		# for i in range(3):
-		# 	glPushMatrix()
-		# 	glTranslatef(i*10, 0, -10)
-		# 	draw_cube(textures_=[ self.textures["paintings"]["4"][e] for e in self.textures["paintings"]["4"]])
-		# 	glPopMatrix()
 
 	def get_player_position(self):
 		return self.config["default"]["player_position"]
@@ -119,7 +108,7 @@ class Museum:
 			"wall"  : 3,
 			"big"   : 2,
 			"normal": 2,
-			"void"  : 2
+			"void"  : 0
 		}
 
 		set_gap_association(gap_association)
@@ -143,6 +132,7 @@ class Museum:
 			for j in range(-30, 50, 20):
 				if k==room:
 					self.config["default"]["player_position"]=[-j,-2,-i]
+					loop=False
 					break
 				k+=1
 
@@ -167,8 +157,6 @@ class Museum:
 				#signalisation
 				signalisation = self.__override_default(room_id, "/signalisation").get("direction")
 				self.config[room_id]["signalisation"] = signal_association[signalisation]
-
-				#self.config[room_id]["textures"]
 
 				#set numbers of paintings
 				nb = int(self.__override_default(room_id, "paintings").get("nb"))
@@ -195,13 +183,10 @@ class Museum:
 						if paintings[wall][1]==0:
 							potential.pop(potential.index(wall))
 							if len(potential)==0:
-								# print "no more wall available"
 								run = False
 								break
 							continue
 						chosen = list_paintings.pop(list_paintings.index(random.choice(list_paintings))).split(os.sep)
-						# print chosen
-						# sys.exit(0)
 						paintings[wall][0].append(self.textures["paintings"][chosen[0]][chosen[1]])
 						paintings[wall][1]-=1
 						break
@@ -219,7 +204,16 @@ class Museum:
 				#set textures
 				self.config[room_id]["textures"]={}
 				#	set wall textures
-				self.config[room_id]["textures"]["wall"] = self.textures["wall"][self.__override_default(room_id, "/textures/texture[@type='walls']").get("path")]
+				self.config[room_id]["textures"]["walls"] = []
+				#upper wall
+				self.config[room_id]["textures"]["walls"].append(self.textures["wall"][self.__override_default(room_id, "/textures/walls/wall[@type='up']").get("path")])
+				#down wall
+				self.config[room_id]["textures"]["walls"].append(self.textures["wall"][self.__override_default(room_id, "/textures/walls/wall[@type='down']").get("path")])
+				#left wall
+				self.config[room_id]["textures"]["walls"].append(self.textures["wall"][self.__override_default(room_id, "/textures/walls/wall[@type='left']").get("path")])
+				#right wall
+				self.config[room_id]["textures"]["walls"].append(self.textures["wall"][self.__override_default(room_id, "/textures/walls/wall[@type='right']").get("path")])
+
 				#	set ground textures
 				self.config[room_id]["textures"]["ground"] = self.textures["ground"][self.__override_default(room_id, "/textures/texture[@type='ground']").get("path")]
 				#	set floor textures

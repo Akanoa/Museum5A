@@ -12,6 +12,18 @@ import StringIO
 from maze import *
 from mazeView import *
 
+import lib.utils as utils
+from lib.utils import *
+
+useTkInter = False
+
+try:
+	import Tkinter
+	import tkMessageBox
+	useTkInter = True
+except ImportError:
+	print logger.getTimedHeader() + " main :: [WARNING] TkInter not installed, displaying question in console ...."
+
 class Generator:
 	'''
 	generation of xml file
@@ -80,9 +92,9 @@ class Generator:
 		#Generate a new maze with minimum size
 		searchedPath = floor((rowsAsked * colsAsked) * 0.7)
 
-		print "Number of row : " + str(rowsAsked)
-		print "Number of columns : " + str(colsAsked)
-		print "Minimum size asked for the path: " + str(searchedPath)
+		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Number of row : " + str(rowsAsked)
+		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Number of columns : " + str(colsAsked)
+		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Minimum size asked for the path: " + str(searchedPath)
 
 		generated = maze_search(rowsAsked,colsAsked, searchedPath)
 		maze = self.memoMaze = generated[0]
@@ -318,7 +330,7 @@ class Generator:
 		fileDirectory = "datas/generated/" + nameFile + "/"
 		self.writeDirectory = fileDirectory
 
-		print "Exporting XML Tree to file : " + fileName + " in directory :" + fileDirectory
+		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting XML Tree to file : " + fileName + " in directory :" + fileDirectory
 		
 		#check if generated dir exist
 		if not os.path.exists("datas/generated"):
@@ -356,29 +368,43 @@ class Generator:
 		reparsed = minidom.parseString(resultString)
 		reparsed = reparsed.toprettyxml(indent="\t")
 
-		#Write to file
+		#Write to filedddd
 		f = open(fileDirectory+ fileName, 'w')
 		f.write(reparsed)
 		f.close()
-		print "Exporting done, new museum generated!\n\n"
+		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting done, new museum generated!"
 
 	def visualizeMuseum(self):
 		"""
 			Gestion of the museum's map generation & visualisation
 			NOTE : you need pygame to run this !
 		"""
-		print "\n#######VISUALISATION########\nTrying to launch visualisation of the map of the museum "
+		print logger.getTimedHeader() + "visualizeMuseum::. [INFO] Trying to launch visualisation of the map of the museum"
 		try:
-			print "Visualisation loaded, you can close it by closing the window"
+			print logger.getTimedHeader() + "visualizeMuseum::. [INFO] Visualisation loaded, you can close it by closing the window"
 			visualize(self.memoMaze, self.writeDirectory)
 		except ImportError:
-			print "<!> ERROR : Visualisation failed, you need to have pygame installed to visualise the map!"
+			print logger.getTimedHeader() + "visualizeMuseum::. [ERROR] Visualisation failed, you need to have pygame installed to visualise the map!"
+
+	def generateWikipediaContent(self):
+		"""
+			Generate content using wikiedia API
+			NOTE : this functionnality use the wikipedia module integrated in the museum directory
+		"""
+		print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Try to get content from wikipedia API"
+		try:
+			print logger.getTimedHeader() + "Visualisation loaded, you can close it by closing the window"
+			visualize(self.memoMaze, self.writeDirectory)
+		except ImportError:
+			print logger.getTimedHeader() + "<!> ERROR : Visualisation failed, you need to have pygame installed to visualise the map!"
+
 
 if __name__ == "__main__":
-	usage = "Usage : python generator.py -v param -n 'nameHere'\n\n-v Y/N - Permit visualisation of the output using pygame\n\n-n 'nameHere' - Permit to give a name to your generated file, if not explicitly put it override the default museum\n\n\n NOTE: you must have a pair number of parameters or the script will stop"
+	asciiDesc = "#####################################################\n###################MUSEUM GENERATOR##################\n#####################################################\n\n"
+	usage = "Usage : python generator.py -v param -n 'nameHere'\n\n-v Y/N - Permit visualisation of the output using pygame\n\n-n 'nameHere' - Permit to give a name to your generated file, if not explicitly put it override the default museum\n\n-c Y/N - Generate Content using Wikipedia API\n\n NOTE: you must have a pair number of parameters or the script will stop"
 
 	if ( len(argv) <= 1):
-		print usage
+		print asciiDesc + usage
 	else:
 		launchParameters = argv
 		launchParameters.pop(0) 	#remove name of the script
@@ -393,34 +419,79 @@ if __name__ == "__main__":
 				print usage
 				exit(0)
 
+		print logger.getTimedHeader() + "__main__::. [INFO] Initializing :: Parsing parameters :: " + str(listCommands)
+
 		#DEFAULT parameters
 		nameMuseum = "defaultMuseum"
 
+		#name generated museum 
 		if "-n" in listCommands :
 			nameMuseum = listCommands["-n"]
-			if nameMuseum == "defaultMuseum":
-				print "Vous etes sur le point de remplacer la configuration xml de base, etes vous sur? ( Y/N)"
+			if nameMuseum == "defaultMuseum":				#same name that the default
+				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+				if useTkInter :
+					top = Tkinter.Tk()
+					top.withdraw()
+					result = tkMessageBox.askquestion("Overwrite", "Your are about to overwrite the default xml configuration, continue?", icon='warning')
+					top.destroy()
+					if result == 'no':
+						print "aborting...."
+						exit(0)
+				else :
+					print "Your are about to overwrite the default xml configuration, continue? ( Y/N)"
+					answer = raw_input("Continuer : ") 
+					if answer != "Y":
+						print "aborting...."
+						exit(0)
+
+			elif os.path.exists("datas/generated/" + nameMuseum):		#file already exist
+				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+				if useTkInter :
+					top = Tkinter.Tk()
+					top.withdraw()
+					result = tkMessageBox.askquestion("Overwrite", "There is already a museum with the given name, do you want to replace it?", icon='warning')
+					top.destroy()
+					if result == 'no':
+						print "aborting...."
+						exit(0)
+				
+				else:
+					print "There is already a museum with the given name, do you want to replace it?"
+					answer = raw_input("Remplacer (Y/N) : ") 
+					if answer != "Y":
+						print "aborting...."
+						exit(0)
+		else :
+			print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+			if useTkInter :
+				top = Tkinter.Tk()
+				top.withdraw()
+				result = tkMessageBox.askquestion("Overwrite", "Your are about to overwrite the default xml configuration, continue? ( Y/N)", icon='warning')
+				top.destroy()
+				if result == 'no':
+					print "aborting...."
+					exit(0)
+			else:
+				print "Your are about to overwrite the default xml configuration, continue? ( Y/N)"
 				answer = raw_input("Continuer : ") 
 				if answer != "Y":
 					print "aborting...."
 					exit(0)
-			elif os.path.exists("datas/generated/" + nameMuseum):
-				print "Un musee portant ce nom existe deja, voulez-vous le remplacer?"
-				answer = raw_input("Remplacer (Y/N) : ") 
-				if answer != "Y":
-					print "aborting...."
-					exit(0)
-		else :
-			print "Vous etes sur le point de remplacer la configuration xml de base, etes vous sur? ( Y/N)"
-			answer = raw_input("Continuer : ") 
-			if answer != "Y":
-				print "aborting...."
-				exit(0)
 
+		print logger.getTimedHeader() + "__main__::. [INFO] Start museum generation"
 		m = Generator(nameMuseum)
 
+		#Generate view !
 		if "-v" in listCommands :
 			if listCommands["-v"] == 'Y':
 				m.visualizeMuseum()
+
+		#Generate content from wikipedia
+		if "-c" in listCommands :
+			if listCommands["-c"] == 'Y':
+				m.generateWikipediaContent()
+
+
+
 
 

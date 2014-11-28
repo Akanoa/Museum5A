@@ -5,6 +5,9 @@ import pygame
 
 from math import floor
 
+import lib.utils as utils
+from lib.utils import *
+
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 RED = (255,0,0)
@@ -19,10 +22,11 @@ class MazeView:
   #-------------------------------------------------------------------------------------#
   #              function definitions for drawing the maze with pygame                  #
   #-------------------------------------------------------------------------------------#
-  def __init__(self, cell = 102 , wall = 10, directory = "datas/generated/defaultMuseum"):
+  def __init__(self, cell = 102 , wall = 10, directory = "datas/generated/defaultMuseum", writeMap = False):
     self.cellSize = cell
     self.wallSize = wall
     self.writeDirectory = directory
+    self.writeMap = writeMap
 
 
   # generates a window with maze with all cells isolated from each other
@@ -101,23 +105,24 @@ class MazeView:
     1)*self.wallSize,self.cellSize,self.cellSize))
     pygame.display.update()
 
-    filename = self.writeDirectory + "map.bmp"
-    pygame.image.save(w, filename) 
-    print "Full map successfully saved to " + filename
+    if self.writeMap:
+      filename = self.writeDirectory + "map.bmp"
+      pygame.image.save(w, filename) 
+      print logger.getTimedHeader() + "mazeView::. [INFO] Full map successfully saved to " + filename
 
-    for index in range(0,len(path)):
-      surface = w.copy()
+      for index in range(0,len(path)):
+        surface = w.copy()
 
-      actrow = path[index][0]
-      actcol = path[index][1]
+        actrow = path[index][0]
+        actcol = path[index][1]
 
-      pygame.draw.rect(surface,INVO,(actcol*self.cellSize+(actcol+1)*self.wallSize,actrow*self.cellSize+(
-    actrow+1)*self.wallSize,self.cellSize,self.cellSize))
+        pygame.draw.rect(surface,INVO,(actcol*self.cellSize+(actcol+1)*self.wallSize,actrow*self.cellSize+(
+      actrow+1)*self.wallSize,self.cellSize,self.cellSize))
 
 
-      filename = self.writeDirectory + "map"+str(index)+".bmp"
-      pygame.image.save(surface, filename) 
-      print "Partial map successfully saved to" + filename
+        filename = self.writeDirectory + "map"+str(index)+".bmp"
+        pygame.image.save(surface, filename) 
+        print logger.getTimedHeader() + "mazeView::. [INFO] Partial map successfully saved to" + filename
 
     
    
@@ -128,7 +133,7 @@ def visualize(mazeValue, dirFile = "datas/generated/defaultMuseum"):
   #print maze.solutionpath
 
   # show the maze with the solution path
-  mazeView = MazeView (108,12,dirFile)
+  mazeView = MazeView (108,12,dirFile, True)
   pygame.init()
   window = mazeView.maze_window(mazeValue)
   mazeView.maze_path_window(mazeValue,window)
