@@ -30,4 +30,3 @@ class Logger:
 		return result
 
 
-logger = Logger()

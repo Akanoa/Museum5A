@@ -12,6 +12,9 @@ from .util import cache, stdout_encode, debug
 import re
 import sys
 
+import lib.utils as utils
+from lib.utils import *
+
 sys.path.append(r"C:\\Users\\utilisateur\\Desktop\\alakon\\wikipedia\\")
 
 API_URL = 'http://en.wikipedia.org/w/api.php'
@@ -737,8 +740,21 @@ def _wiki_request(params):
     wait_time = (RATE_LIMIT_LAST_CALL + RATE_LIMIT_MIN_WAIT) - datetime.now()
     time.sleep(int(wait_time.total_seconds()))
 
-  proxies = {"http":"http://y0guern:jed9334ku@proxy.enib.fr:3128"}
-  r = requests.get(API_URL, params=params, headers=headers, proxies=proxies)
+  useProxy = config.ConfigSectionMap("network")['useproxy']
+
+  r = ""
+
+  if useProxy == "1":
+    hostname = config.ConfigSectionMap("network")['hostname']
+    port = config.ConfigSectionMap("network")['port']
+    username = config.ConfigSectionMap("network")['username']
+    password = config.ConfigSectionMap("network")['password']
+    proxies = {"http":"http://" + username + ":" + password + "@" + hostname + ":" + port}
+    r = requests.get(API_URL, params=params, headers=headers, proxies=proxies)
+
+  else:
+    r = requests.get(API_URL, params=params, headers=headers)
+  
 
   if RATE_LIMIT:
     RATE_LIMIT_LAST_CALL = datetime.now()

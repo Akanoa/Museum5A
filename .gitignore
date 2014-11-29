@@ -7,3 +7,12 @@ datas/generated/*
 #except default directory
 !datas/generated/defaultMuseum/
 !datas/generated/defaultMuseum/*
+
+#ignore eveything in texts/paintings directory
+datas/texts/paintings/*
+
+#except test File ( desactivated )
+#test.py
+
+#except configurationFile
+conf.ini

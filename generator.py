@@ -12,7 +12,6 @@ import StringIO
 from maze import *
 from mazeView import *
 
-import lib.utils as utils
 from lib.utils import *
 
 useTkInter = False
@@ -43,9 +42,12 @@ class Generator:
 		self.listTexCeiling = os.listdir(self.texturesCeilingPath)
 
 		self.texturesGroundPath = self.texturePath + "ground/" 
-		self.listTexGround= os.listdir(self.texturesGroundPath)
+		self.listTexGround = os.listdir(self.texturesGroundPath)
 
 		self.defaultTypeDoors = ["big","normal","void"]
+
+		self.textsPath = "datas/texts/"
+		self.textsPaintingsPath = self.textsPath + "paintings/"
 
 		self.prepareDefaultParameters()
 		self.generateNewMuseum()
@@ -55,7 +57,7 @@ class Generator:
 		'''
 		Write defaut parameters on top of the tree
 		'''
-		tree = ET.parse("museum.xml")					##Default params
+		tree = ET.parse("museum.xml")											##Default params
 		doc = tree.getroot()
 		defaultParams = doc.find('default')
 
@@ -170,7 +172,7 @@ class Generator:
 		elif (direction == 3):
 			return 2
 		else:
-			return 10			#none
+			return 10							#none
 
 	def choosePaintingSet(self):
 		'''
@@ -330,7 +332,7 @@ class Generator:
 		fileDirectory = "datas/generated/" + nameFile + "/"
 		self.writeDirectory = fileDirectory
 
-		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting XML Tree to file : " + fileName + " in directory :" + fileDirectory
+		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting XML Tree to file '" + fileName + "'' in directory '" + fileDirectory + "'"
 		
 		#check if generated dir exist
 		if not os.path.exists("datas/generated"):
@@ -346,7 +348,7 @@ class Generator:
 			os.remove(fileDirectory + listFiles[i])
 
 		#format the xml nicely
-		rough_string = ET.tostring(self.root, method="xml", encoding='UTF-8' )
+		rough_string = ET.tostring(self.root, method="xml", encoding='UTF-8')
 		buf = StringIO.StringIO(rough_string)
 		bufferLine = buf.readline()
 		resultString = ""
@@ -388,15 +390,110 @@ class Generator:
 
 	def generateWikipediaContent(self):
 		"""
-			Generate content using wikiedia API
+			Generate content using wikipedia API and manifest files in each folder
 			NOTE : this functionnality use the wikipedia module integrated in the museum directory
 		"""
-		print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Try to get content from wikipedia API"
+		print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Begin generating content using wikipedia API"
 		try:
-			print logger.getTimedHeader() + "Visualisation loaded, you can close it by closing the window"
-			visualize(self.memoMaze, self.writeDirectory)
+			import lib.wikipedia as wikipedia
+			print logger.getTimedHeader() + "generateWikipediaContent ::. [INFO] Wikipedia Module loaded successfully"
 		except ImportError:
-			print logger.getTimedHeader() + "<!> ERROR : Visualisation failed, you need to have pygame installed to visualise the map!"
+			print logger.getTimedHeader() + "generateWikipediaContent ::. [ERROR] Wikipedia Module failed to load, exiting"
+			exit(0)
+
+		useProxy = config.ConfigSectionMap("network")['useproxy']
+		if useProxy == '1' :
+			print logger.getTimedHeader() + "__main__::. [WARNING] Proxy mode is enabled"
+			print logger.getTimedHeader() + "__main__::. [WARNING] Proxy data :\n\t* Hostname : " + config.ConfigSectionMap("network")['hostname'] + "\n\t* Port : " + config.ConfigSectionMap("network")['port'] + "\n\t* Username : " + config.ConfigSectionMap("network")['username'] + "\n\t* Password : " + config.ConfigSectionMap("network")['password']
+
+		for i in range (len(self.listPaintings)):
+			#check if directory exist ....
+			activeDirectory = self.textsPaintingsPath + self.listPaintings[i] + "/"
+
+			if os.path.exists(activeDirectory):								#Directory exist, try to read files
+				if os.path.exists(activeDirectory + "manifest.xml"):
+					print logger.getTimedHeader() + "generateWikipediaContent ::. [INFO] Reading manifest.xml file in " + activeDirectory + "'"
+					self.getWikipediaContent(activeDirectory,i)
+				else:
+					print logger.getTimedHeader() + "generateWikipediaContent ::. [WARNING] Can't open or find manifest.xml in '" + activeDirectory + "'"
+					self.createDefaultTextFolder (activeDirectory, i)
+					self.getWikipediaContent(activeDirectory,i)
+			else:
+				print logger.getTimedHeader() + "generateWikipediaContent ::. [WARNING] Directory '" + activeDirectory + "' doesn't exist.... "
+				self.createDefaultTextFolder (activeDirectory, i)
+				self.getWikipediaContent(activeDirectory,i)
+
+
+	def createDefaultTextFolder(self, activeDirectory, index):
+		"""
+			Create defaut text directory in the given activeDirectory, for the index paintings folder
+		"""
+		print logger.getTimedHeader() + "createDefaultTextFolder ::. [INFO] Creating folder '"+ activeDirectory + "'and basic 'manifest.xml'"
+
+		#Create dir if necessary
+		if not(os.path.exists(activeDirectory)):		
+			os.makedirs(activeDirectory)
+
+		#Prepare contents of the defaultManifest.xml file
+		files = ET.Element('files')
+		pathCurrentTextureDir = self.paintingPath + self.listPaintings[index]+ "/"
+		listTextures = os.listdir(pathCurrentTextureDir)
+		for j in range(len(listTextures)) :
+			textureFile = ET.Element('file')
+
+			nameFile = listTextures[j].split(".")
+
+			textureFile.set("index",str(index))
+			#Set name of texture as default researchKey
+			textureFile.set("nameTexture",nameFile[0])
+			textureFile.set("extension",nameFile[1])
+			textureFile.set("researchKey", nameFile[0])
+
+			files.append(textureFile)
+
+		xmlString = ET.tostring(files, method="xml", encoding='UTF-8')
+		export = minidom.parseString(xmlString)
+		export = export.toprettyxml(indent="\t")
+
+		#Write to file
+		f = open(activeDirectory+ "manifest.xml", 'w')
+		f.write(export)
+		f.close()
+
+	def getWikipediaContent(self, activeDirectory, index):
+		"""
+			Get wikipedia Content using the searchKey from manifest.xml file
+		"""
+		import lib.wikipedia as wikipedia
+		from lib.wikipedia import (PageError)
+
+		print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Searching for information from wikipedia using manifest in '" + activeDirectory + "'"
+		tree = ET.parse(activeDirectory + "manifest.xml")				##Default params
+		root = tree.getroot()
+		allFiles = root.findall('file')
+
+		#Foreach entry in manifest, get the researchKey and make call to wikipedia for content, then create associated file
+		for i in range(len(allFiles)):
+			currentFile = allFiles[i]
+			index = int(currentFile.get("index"))
+			filename = currentFile.get("nameTexture")
+			researchKey = currentFile.get("researchKey")
+			extension = currentFile.get("extension")
+
+			wikiSummary = "" 
+			print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Get content from wikipedia using keywork '" + researchKey + "' for the file '" + filename + "." + extension + "'" 
+			try:
+				wikiData = wikipedia.page(researchKey)
+				wikiSummary = wikiData.summary
+			except:
+				print logger.getTimedHeader() + "generateWikipediaContent ::. [ERROR] Wikipedia Module can't find any result that match keywork '" + researchKey +"', fill file with default content" 
+				wikiSummary = "Sorry, no result have been found on wikipedia for this painting"
+
+			#Write to file
+			print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Writing file'" + activeDirectory+ filename + ".data" + "' in the directory '" + activeDirectory + "'" 
+			f = open(activeDirectory+ filename + ".data", 'w')
+			f.write(wikiSummary.encode('UTF-8'))
+			f.close()
 
 
 if __name__ == "__main__":
@@ -414,10 +511,13 @@ if __name__ == "__main__":
 		listCommands = {}
 		for x in range(0,nbOptions,2):
 			if (x+1 < nbOptions):
-				listCommands[launchParameters[x]] =launchParameters[x+1]
+				listCommands[launchParameters[x]] = launchParameters[x+1]
 			else :
 				print usage
 				exit(0)
+
+		#Generating or reading configFile
+		print logger.getTimedHeader() + "__main__::. [INFO] Accessing to configFile"
 
 		print logger.getTimedHeader() + "__main__::. [INFO] Initializing :: Parsing parameters :: " + str(listCommands)
 
@@ -427,7 +527,7 @@ if __name__ == "__main__":
 		#name generated museum 
 		if "-n" in listCommands :
 			nameMuseum = listCommands["-n"]
-			if nameMuseum == "defaultMuseum":				#same name that the default
+			if nameMuseum == "defaultMuseum":																	#same name that the default
 				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
 				if useTkInter :
 					top = Tkinter.Tk()
@@ -444,7 +544,7 @@ if __name__ == "__main__":
 						print "aborting...."
 						exit(0)
 
-			elif os.path.exists("datas/generated/" + nameMuseum):		#file already exist
+			elif os.path.exists("datas/generated/" + nameMuseum):												#file already exist
 				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
 				if useTkInter :
 					top = Tkinter.Tk()
@@ -490,6 +590,8 @@ if __name__ == "__main__":
 		if "-c" in listCommands :
 			if listCommands["-c"] == 'Y':
 				m.generateWikipediaContent()
+
+
 
 
 
