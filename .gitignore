@@ -10,7 +10,7 @@ datas/generated/*
 
 #ignore eveything in texts/paintings directory
 datas/texts/paintings/*
-!datas/texts/paintings/
+!datas/texts/paintings/.gitkeep
 
 #except test File ( desactivated )
 #test.py
