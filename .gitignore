@@ -16,4 +16,4 @@ datas/texts/paintings/*
 #test.py
 
 #except configurationFile
-conf.ini
+config.ini
