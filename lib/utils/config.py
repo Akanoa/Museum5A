@@ -11,19 +11,17 @@ class Config:
     configFile = None
     configParser = None
     filePath = "./config.ini"
+	forceProxyOff = False
 
     def __init__(self,loggerInput):
         self.loggerConfig = loggerInput
         self.initializeConfigFile()
-        
-
 
     def initializeConfigFile(self):
         """
             Try to open configFile or create a new one if necessary
         """
         self.configParser = ConfigParser.ConfigParser(allow_no_value = True)
-
 
         #If file exists
         if os.path.exists(self.filePath):

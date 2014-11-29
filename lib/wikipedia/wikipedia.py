@@ -744,7 +744,7 @@ def _wiki_request(params):
 
   r = ""
 
-  if useProxy == "1":
+  if (useProxy == "1") AND (config.forceProxyOff == False ):
     hostname = config.ConfigSectionMap("network")['hostname']
     port = config.ConfigSectionMap("network")['port']
     username = config.ConfigSectionMap("network")['username']

@@ -403,9 +403,39 @@ class Generator:
 
 		useProxy = config.ConfigSectionMap("network")['useproxy']
 		if useProxy == '1' :
-			print logger.getTimedHeader() + "__main__::. [WARNING] Proxy mode is enabled"
-			print logger.getTimedHeader() + "__main__::. [WARNING] Proxy data :\n\t* Hostname : " + config.ConfigSectionMap("network")['hostname'] + "\n\t* Port : " + config.ConfigSectionMap("network")['port'] + "\n\t* Username : " + config.ConfigSectionMap("network")['username'] + "\n\t* Password : " + config.ConfigSectionMap("network")['password']
+			print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Proxy mode is enabled"
+			
+			hostname = config.ConfigSectionMap("network")['hostname']
+			port = config.ConfigSectionMap("network")['port']
+			username = config.ConfigSectionMap("network")['username']
+			password = config.ConfigSectionMap("network")['password']
+			
+			print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Proxy data :\n\t* Hostname : " + hostname + "\n\t* Port : " + port + "\n\t* Username : " + username + "\n\t* Password : " + config.ConfigSectionMap("network")['password']
+			
+			#try to make request without proxy ( stupid user ! )
+			print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Try to make url call without proxy ..."
+			try:
+				
+				urllib.urlopen(
+					"http://example.com",
+					proxies={'http':'http://example.com:8080'}
+				)
+			except IOError:
+				print logger.getTimedHeader() + "generateWikipediaContent::. [ERROR] Can't connect without proxy , use given parameters from config.ini ..."
+				try:
+					urllib.urlopen(
+					"http://example.com",
+					proxies = {"http":"http://" + username + ":" + password + "@" + hostname + ":" + port}
+					)
+					print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Success, given proxy's configuration is correct."
+				except:
+					print logger.getTimedHeader() + "generateWikipediaContent::. [CRITICAL] Can't connect with or without proxy , all .data files will be empty !!"
+			else:
+				print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Set FORCEPROXYOFF mode because we can connect without proxy !"
+				
+				config.forceProxyOff = True
 
+		
 		for i in range (len(self.listPaintings)):
 			#check if directory exist ....
 			activeDirectory = self.textsPaintingsPath + self.listPaintings[i] + "/"
