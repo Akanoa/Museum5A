@@ -1,8 +1,12 @@
 # imports
 from maze import *
 from sys import *
-import pygame
 
+try:
+	import pygame
+except :
+	print "Can't import pygame... check your installation"
+	
 from math import floor
 
 import lib.utils as utils
@@ -108,7 +112,7 @@ class MazeView:
     if self.writeMap:
       filename = self.writeDirectory + "map.bmp"
       pygame.image.save(w, filename) 
-      print logger.getTimedHeader() + "mazeView::. [INFO] Full map successfully saved to " + filename
+      logger.logIt (fromModule = "mazeView" , tag = "INFO", content = "Full map successfully saved to " + filename )
 
       for index in range(0,len(path)):
         surface = w.copy()
@@ -122,7 +126,7 @@ class MazeView:
 
         filename = self.writeDirectory + "map"+str(index)+".bmp"
         pygame.image.save(surface, filename) 
-        print logger.getTimedHeader() + "mazeView::. [INFO] Partial map successfully saved to" + filename
+        logger.logIt (fromModule = "mazeView" , tag = "INFO", content = "Partial map successfully saved to" + filename )
 
     
    

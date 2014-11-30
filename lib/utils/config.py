@@ -11,7 +11,7 @@ class Config:
     configFile = None
     configParser = None
     filePath = "./config.ini"
-	forceProxyOff = False
+    forceProxyOff = False
 
     def __init__(self,loggerInput):
         self.loggerConfig = loggerInput
@@ -25,10 +25,10 @@ class Config:
 
         #If file exists
         if os.path.exists(self.filePath):
-            print self.loggerConfig.getTimedHeader() + "config::initializeConfigFile::. [INFO] ConfigFile detected in main directory"
+            self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "INFO", content = "ConfigFile detected in main directory" )
             configFile = self.configParser.read(self.filePath)
         else :
-            print self.loggerConfig.getTimedHeader() + "config::initializeConfigFile::. [INFO] ConfigFile is not present, generating it"
+            self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "WARNING", content = "ConfigFile is not present, generating it..." )
             self.rewriteNewConfigFile()
 
     def rewriteNewConfigFile(self):
@@ -51,6 +51,8 @@ class Config:
         self.configParser.write(cfgFile)
         cfgFile.close()
 
+        self.loggerConfig.logIt (fromModule = "config - rewriteNewConfigFile" , tag = "INFO", content = "config.ini have been generated in main directory" )
+
 
     def ConfigSectionMap(self,section):
         """
@@ -72,7 +74,6 @@ class Config:
 
 
 if __name__ == "__main__":
-
   if argv[1] == "-h":
     print "Usage : \n -o : Overwrite configFile OR -r readConfigFile  \n"
     exit(0)

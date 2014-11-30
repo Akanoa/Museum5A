@@ -94,9 +94,9 @@ class Generator:
 		#Generate a new maze with minimum size
 		searchedPath = floor((rowsAsked * colsAsked) * 0.7)
 
-		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Number of row : " + str(rowsAsked)
-		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Number of columns : " + str(colsAsked)
-		print logger.getTimedHeader() + "GenerateNewMuseum::. [INFO] Minimum size asked for the path: " + str(searchedPath)
+		logger.logIt (fromModule = "generateNewMuseum" , tag = "DEBUG", content = "Number of row : " + str(rowsAsked))
+		logger.logIt (fromModule = "generateNewMuseum" , tag = "DEBUG", content = "Number of columns : " + str(colsAsked))
+		logger.logIt (fromModule = "generateNewMuseum" , tag = "DEBUG", content = "Minimum size asked for the path: " + str(searchedPath))
 
 		generated = maze_search(rowsAsked,colsAsked, searchedPath)
 		maze = self.memoMaze = generated[0]
@@ -332,7 +332,7 @@ class Generator:
 		fileDirectory = "datas/generated/" + nameFile + "/"
 		self.writeDirectory = fileDirectory
 
-		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting XML Tree to file '" + fileName + "'' in directory '" + fileDirectory + "'"
+		logger.logIt (fromModule = "exportToFile" , tag = "INFO", content = "Exporting XML Tree to file '" + fileName + "'' in directory '" + fileDirectory + "'")
 		
 		#check if generated dir exist
 		if not os.path.exists("datas/generated"):
@@ -374,65 +374,62 @@ class Generator:
 		f = open(fileDirectory+ fileName, 'w')
 		f.write(reparsed)
 		f.close()
-		print logger.getTimedHeader() + "exportToFile::. [INFO] Exporting done, new museum generated!"
+
+		logger.logIt (fromModule = "exportToFile" , tag = "INFO", content = "Exporting done, new museum generated!")
 
 	def visualizeMuseum(self):
 		"""
 			Gestion of the museum's map generation & visualisation
 			NOTE : you need pygame to run this !
 		"""
-		print logger.getTimedHeader() + "visualizeMuseum::. [INFO] Trying to launch visualisation of the map of the museum"
+		logger.logIt (fromModule = "visualizeMuseum" , tag = "INFO", content = "Trying to launch visualisation of the map of the museum")
 		try:
-			print logger.getTimedHeader() + "visualizeMuseum::. [INFO] Visualisation loaded, you can close it by closing the window"
+			logger.logIt (fromModule = "visualizeMuseum" , tag = "INFO", content = "Visualisation loaded, you can close it by closing the window")
 			visualize(self.memoMaze, self.writeDirectory)
 		except ImportError:
-			print logger.getTimedHeader() + "visualizeMuseum::. [ERROR] Visualisation failed, you need to have pygame installed to visualise the map!"
+			logger.logIt (fromModule = "visualizeMuseum" , tag = "CRITICAL", content = "Visualisation failed, you need to have pygame installed to visualise the map!")
 
 	def generateWikipediaContent(self):
 		"""
 			Generate content using wikipedia API and manifest files in each folder
 			NOTE : this functionnality use the wikipedia module integrated in the museum directory
 		"""
-		print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Begin generating content using wikipedia API"
+		logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Begin generating content using wikipedia API")
 		try:
 			import lib.wikipedia as wikipedia
-			print logger.getTimedHeader() + "generateWikipediaContent ::. [INFO] Wikipedia Module loaded successfully"
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Wikipedia Module loaded successfully")
 		except ImportError:
-			print logger.getTimedHeader() + "generateWikipediaContent ::. [ERROR] Wikipedia Module failed to load, exiting"
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "ERROR", content = "Wikipedia Module failed to load, exiting")
 			exit(0)
 
 		useProxy = config.ConfigSectionMap("network")['useproxy']
 		if useProxy == '1' :
-			print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Proxy mode is enabled"
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Proxy mode is enabled")
 			
 			hostname = config.ConfigSectionMap("network")['hostname']
 			port = config.ConfigSectionMap("network")['port']
 			username = config.ConfigSectionMap("network")['username']
 			password = config.ConfigSectionMap("network")['password']
 			
-			print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Proxy data :\n\t* Hostname : " + hostname + "\n\t* Port : " + port + "\n\t* Username : " + username + "\n\t* Password : " + config.ConfigSectionMap("network")['password']
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Proxy data :\n\t* Hostname : " + hostname + "\n\t* Port : " + port + "\n\t* Username : " + username + "\n\t* Password : " + config.ConfigSectionMap("network")['password'])
 			
-			#try to make request without proxy ( stupid user ! )
-			print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Try to make url call without proxy ..."
+			#try to make request with proxy & without it something failed ( stupid user ! )
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Try to make url call without proxy ...")
+
+			value = True;
 			try:
-				
-				urllib.urlopen(
-					"http://example.com",
-					proxies={'http':'http://example.com:8080'}
-				)
-			except IOError:
-				print logger.getTimedHeader() + "generateWikipediaContent::. [ERROR] Can't connect without proxy , use given parameters from config.ini ..."
+				urllib.urlopen("http://example.com",proxies = {"http":"http://" + username + ":" + password + "@" + hostname + ":" + port})
+				logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Success, given proxy's configuration is correct.")
+				value = False;
+			except:
+				logger.logIt (fromModule = "generateWikipediaContent" , tag = "ERROR", content = "Can't connect with proxy , check your config.ini.... Now, try to connect without proxy !!")
 				try:
-					urllib.urlopen(
-					"http://example.com",
-					proxies = {"http":"http://" + username + ":" + password + "@" + hostname + ":" + port}
-					)
-					print logger.getTimedHeader() + "generateWikipediaContent::. [INFO] Success, given proxy's configuration is correct."
-				except:
-					print logger.getTimedHeader() + "generateWikipediaContent::. [CRITICAL] Can't connect with or without proxy , all .data files will be empty !!"
-			else:
-				print logger.getTimedHeader() + "generateWikipediaContent::. [WARNING] Set FORCEPROXYOFF mode because we can connect without proxy !"
-				
+					urllib.urlopen("http://example.com",proxies={'http':'http://example.com:8080'})
+				except IOError:
+					logger.logIt (fromModule = "generateWikipediaContent" , tag = "CRITICAL", content = "Can't connect with or without proxy , user may check the config.ini")
+					value = False
+			if value :
+				logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Set FORCEPROXYOFF mode because we can connect without proxy !")
 				config.forceProxyOff = True
 
 		
@@ -442,14 +439,14 @@ class Generator:
 
 			if os.path.exists(activeDirectory):								#Directory exist, try to read files
 				if os.path.exists(activeDirectory + "manifest.xml"):
-					print logger.getTimedHeader() + "generateWikipediaContent ::. [INFO] Reading manifest.xml file in " + activeDirectory + "'"
+					logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Reading manifest.xml file in " + activeDirectory + "'")
 					self.getWikipediaContent(activeDirectory,i)
 				else:
-					print logger.getTimedHeader() + "generateWikipediaContent ::. [WARNING] Can't open or find manifest.xml in '" + activeDirectory + "'"
+					logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Can't open or find manifest.xml in '" + activeDirectory + "'" )
 					self.createDefaultTextFolder (activeDirectory, i)
 					self.getWikipediaContent(activeDirectory,i)
 			else:
-				print logger.getTimedHeader() + "generateWikipediaContent ::. [WARNING] Directory '" + activeDirectory + "' doesn't exist.... "
+				logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Directory '" + activeDirectory + "' doesn't exist.... " )
 				self.createDefaultTextFolder (activeDirectory, i)
 				self.getWikipediaContent(activeDirectory,i)
 
@@ -458,7 +455,8 @@ class Generator:
 		"""
 			Create defaut text directory in the given activeDirectory, for the index paintings folder
 		"""
-		print logger.getTimedHeader() + "createDefaultTextFolder ::. [INFO] Creating folder '"+ activeDirectory + "'and basic 'manifest.xml'"
+		
+		logger.logIt (fromModule = "createDefaultTextFolder" , tag = "INFO", content = "Creating folder '"+ activeDirectory + "'and basic 'manifest.xml'" )
 
 		#Create dir if necessary
 		if not(os.path.exists(activeDirectory)):		
@@ -497,7 +495,7 @@ class Generator:
 		import lib.wikipedia as wikipedia
 		from lib.wikipedia import (PageError)
 
-		print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Searching for information from wikipedia using manifest in '" + activeDirectory + "'"
+		logger.logIt (fromModule = "getWikipediaContent" , tag = "INFO", content = "Searching for information from wikipedia using manifest in '" + activeDirectory + "'" )
 		tree = ET.parse(activeDirectory + "manifest.xml")				##Default params
 		root = tree.getroot()
 		allFiles = root.findall('file')
@@ -511,16 +509,16 @@ class Generator:
 			extension = currentFile.get("extension")
 
 			wikiSummary = "" 
-			print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Get content from wikipedia using keywork '" + researchKey + "' for the file '" + filename + "." + extension + "'" 
+			logger.logIt (fromModule = "getWikipediaContent" , tag = "INFO", content = "Get content from wikipedia using keywork '" + researchKey + "' for the file '" + filename + "." + extension + "'" )
 			try:
 				wikiData = wikipedia.page(researchKey)
 				wikiSummary = wikiData.summary
 			except:
-				print logger.getTimedHeader() + "generateWikipediaContent ::. [ERROR] Wikipedia Module can't find any result that match keywork '" + researchKey +"', fill file with default content" 
+				logger.logIt (fromModule = "getWikipediaContent" , tag = "ERROR", content = "Wikipedia Module can't find any result that match keywork '" + researchKey +"', fill file with default content" )
 				wikiSummary = "Sorry, no result have been found on wikipedia for this painting"
 
 			#Write to file
-			print logger.getTimedHeader() + "getWikipediaContent ::. [INFO] Writing file'" + activeDirectory+ filename + ".data" + "' in the directory '" + activeDirectory + "'" 
+			logger.logIt (fromModule = "getWikipediaContent" , tag = "INFO", content = "Writing file'" + activeDirectory+ filename + ".data" + "' in the directory '" + activeDirectory + "'" )
 			f = open(activeDirectory+ filename + ".data", 'w')
 			f.write(wikiSummary.encode('UTF-8'))
 			f.close()
@@ -546,69 +544,73 @@ if __name__ == "__main__":
 				print usage
 				exit(0)
 
-		#Generating or reading configFile
-		print logger.getTimedHeader() + "__main__::. [INFO] Accessing to configFile"
-
-		print logger.getTimedHeader() + "__main__::. [INFO] Initializing :: Parsing parameters :: " + str(listCommands)
-
+		logger.logIt (fromModule = "__main__" , tag = "INFO", content = "Initializing :: Parsing parameters :: " + str(listCommands) )
 		#DEFAULT parameters
 		nameMuseum = "defaultMuseum"
+
+		#TEST
+		# logger.logIt (fromModule = "Test module" , tag = "CRITICAL", content = "Test content of the new logging system" )
+		# logger.logIt (fromModule = "Test module" , tag = "ERROR", content = "Test content of the new logging system" )
+		# logger.logIt (fromModule = "Test module" , tag = "WARNING", content = "Test content of the new logging system" )
+		# logger.logIt (fromModule = "Test module" , tag = "INFO", content = "Test content of the new logging system" )
+		# logger.logIt (fromModule = "Test module" , tag = "DEBUG", content = "Test content of the new logging system" )
+		# logger.logIt (fromModule = "Test module" , tag = "OTHERTAG", content = "Test content of the new logging system" )
 
 		#name generated museum 
 		if "-n" in listCommands :
 			nameMuseum = listCommands["-n"]
 			if nameMuseum == "defaultMuseum":																	#same name that the default
-				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+				logger.logIt (fromModule = "__main__" , tag = "INFO", content = "NameMuseum :: Waiting for user input...")
 				if useTkInter :
 					top = Tkinter.Tk()
 					top.withdraw()
 					result = tkMessageBox.askquestion("Overwrite", "Your are about to overwrite the default xml configuration, continue?", icon='warning')
 					top.destroy()
 					if result == 'no':
-						print "aborting...."
+						logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 						exit(0)
 				else :
-					print "Your are about to overwrite the default xml configuration, continue? ( Y/N)"
+					logger.logIt (fromModule = "__main__" , tag = "WARNING", content = "Your are about to overwrite the default xml configuration, continue? ( Y/N)")
 					answer = raw_input("Continuer : ") 
 					if answer != "Y":
-						print "aborting...."
+						logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 						exit(0)
 
 			elif os.path.exists("datas/generated/" + nameMuseum):												#file already exist
-				print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+				logger.logIt (fromModule = "__main__" , tag = "INFO", content = "NameMuseum :: Waiting for user input...")
 				if useTkInter :
 					top = Tkinter.Tk()
 					top.withdraw()
 					result = tkMessageBox.askquestion("Overwrite", "There is already a museum with the given name, do you want to replace it?", icon='warning')
 					top.destroy()
 					if result == 'no':
-						print "aborting...."
+						logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 						exit(0)
 				
 				else:
-					print "There is already a museum with the given name, do you want to replace it?"
+					logger.logIt (fromModule = "__main__" , tag = "WARNING", content = "There is already a museum with the given name, do you want to replace it?")
 					answer = raw_input("Remplacer (Y/N) : ") 
 					if answer != "Y":
-						print "aborting...."
+						logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 						exit(0)
 		else :
-			print logger.getTimedHeader() + "__main__::. [INFO] NameMuseum :: Waiting for user input..."
+			logger.logIt (fromModule = "__main__" , tag = "INFO", content = "NameMuseum :: Waiting for user input...")
 			if useTkInter :
 				top = Tkinter.Tk()
 				top.withdraw()
 				result = tkMessageBox.askquestion("Overwrite", "Your are about to overwrite the default xml configuration, continue? ( Y/N)", icon='warning')
 				top.destroy()
 				if result == 'no':
-					print "aborting...."
+					logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 					exit(0)
 			else:
 				print "Your are about to overwrite the default xml configuration, continue? ( Y/N)"
 				answer = raw_input("Continuer : ") 
 				if answer != "Y":
-					print "aborting...."
+					logger.logIt (fromModule = "__main__" , tag = "CRITICAL", content = "Aborting due to user input.")
 					exit(0)
 
-		print logger.getTimedHeader() + "__main__::. [INFO] Start museum generation"
+		logger.logIt (fromModule = "__main__" , tag = "INFO", content = "Start museum generation")
 		m = Generator(nameMuseum)
 
 		#Generate view !
@@ -620,10 +622,4 @@ if __name__ == "__main__":
 		if "-c" in listCommands :
 			if listCommands["-c"] == 'Y':
 				m.generateWikipediaContent()
-
-
-
-
-
-
 
