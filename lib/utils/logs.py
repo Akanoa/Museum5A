@@ -25,8 +25,8 @@ class Logger:
 
 	version = "0.1.0"
 	startTime = 0;
-	exportToFile = False
 	pathToFile = None
+	logMode = 3;
 	tagColors = {}
 
 	def __init__(self):
@@ -46,6 +46,21 @@ class Logger:
 		self.header = 	self.separatorColor + ".::" + self.resetConsole +\
 						self.nameAppColor + " Museum v" + self.version + self.resetConsole + \
 			 			self.separatorColor + " :: " + self.resetConsole
+
+	def setVariableFromConfig(self, logModeValue, pathToFileValue):
+		"""
+			Set variables for the logging system from the config.ini file
+		"""
+		self.logMode = int(logModeValue)
+		self.pathToFile = pathToFileValue
+
+		self.logIt (fromModule = "logs - setVariableFromConfig" , tag = "INFO", content = "Log mode is setting to : " + str(logModeValue))
+		self.logIt (fromModule = "logs - setVariableFromConfig" , tag = "INFO", content = "Path to file is setting to : " + pathToFileValue)
+
+		#overwrite previous log if necessary
+		if (self.logMode == 3 or self.logMode == 2):
+			f = open(self.pathToFile + "museum.log", 'w')
+			f.close()
 
 	def setStartTime (self):
 		"""
@@ -68,25 +83,38 @@ class Logger:
 		"""
 			Main function which handle the incoming request from the whole program to print some log ( in file or in console, depending on settings)
 		"""
-		currentTime = time.time() - self.startTime
-		currentTime = ceil(currentTime * 100000) / 100000.0
+		#no logs mode ?
 
-		selectedTagColor = "";
+		if self.logMode != 0:
+			currentTime = time.time() - self.startTime
+			currentTime = ceil(currentTime * 100000) / 100000.0
 
-		if tag in self.tagColors :
-			selectedTagColor = self.tagColors[tag]
-		else:
-			selectedTagColor = self.tagColors["OTHERS"]
+			selectedTagColor = "";
 
-		print( 	self.header +
-				self.timeColor + str(currentTime) + self.resetConsole + self.separator +
-				self.fromModuleColor + fromModule + self.resetConsole +
-				self.separatorColor + " ::. " + self.resetConsole +
-				self.separatorColor + "[" + self.resetConsole +
-				selectedTagColor + tag + self.resetConsole + 
-				self.separatorColor + "] " + self.resetConsole +
-				content
-				)
+			if tag in self.tagColors :
+				selectedTagColor = self.tagColors[tag]
+			else:
+				selectedTagColor = self.tagColors["OTHERS"]
+
+			#if console mode
+			if (self.logMode == 3) or (self.logMode == 1):
+				print( 	self.header +
+						self.timeColor + str(currentTime) + self.resetConsole + self.separator +
+						self.fromModuleColor + fromModule + self.resetConsole +
+						self.separatorColor + " ::. " + self.resetConsole +
+						self.separatorColor + "[" + self.resetConsole +
+						selectedTagColor + tag + self.resetConsole + 
+						self.separatorColor + "] " + self.resetConsole +
+						content
+						)
+
+			#log file
+			if (self.logMode == 3) or (self.logMode == 2):
+				toLog = ".:: Museum v" + self.version + " :: " + str(currentTime) + " :: " + fromModule + " ::. [" + tag + "] " + content + "\n"
+				f = open(self.pathToFile + "museum.log", 'a')
+				f.write(toLog.encode('UTF-8'))
+				f.close()
+
 
 
 

@@ -2,7 +2,7 @@ from collections import defaultdict
 import itertools
 import sys, os
 
-sys.path.append(os.getcwd()+"lib\\wikipedia\\")
+sys.path.append(os.getcwd()+"\\lib\\wikipedia\\")
 
 from bs4.element import (
     CharsetMetaAttributeValue,

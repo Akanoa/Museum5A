@@ -23,13 +23,20 @@ class Config:
         """
         self.configParser = ConfigParser.ConfigParser(allow_no_value = True)
 
+
+        mode = 0;
         #If file exists
         if os.path.exists(self.filePath):
-            self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "INFO", content = "ConfigFile detected in main directory" )
             configFile = self.configParser.read(self.filePath)
         else :
-            self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "WARNING", content = "ConfigFile is not present, generating it..." )
+            
             self.rewriteNewConfigFile()
+            mode = 1;
+
+        #set logging parameters
+        self.loggerConfig.setVariableFromConfig(self.ConfigSectionMap("logs")['logmode'],self.ConfigSectionMap("logs")['pathtofile'])
+        if mode == 0 : self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "INFO", content = "ConfigFile detected in main directory" )
+        else : self.loggerConfig.logIt (fromModule = "config - initializeConfigFile" , tag = "WARNING", content = "ConfigFile is not present, generating it..." )
 
     def rewriteNewConfigFile(self):
         """
@@ -39,7 +46,7 @@ class Config:
 
         self.configParser.add_section('network')
         self.configParser.set('network','#useproxy(1) or not (0)')
-        self.configParser.set('network','useProxy', 0)
+        self.configParser.set('network','useproxy', 0)
         self.configParser.set('network','#The hostname of your proxy or the IP @example - proxy.enib.fr')
         self.configParser.set('network','hostname', "ProxyHostnameHere")
         self.configParser.set('network','#The port where your proxy listen @example - 3128')
@@ -48,11 +55,17 @@ class Config:
         self.configParser.set('network','username', "YourUsernameHere")
         self.configParser.set('network','#Your password @example -  doyoureallyhopethatiwillgiveyoumypassword')
         self.configParser.set('network','password', "Yourpassword here")
+
+        self.configParser.add_section('logs')
+        self.configParser.set('logs','#logmode : 3 = Console + logs, 2 = log only, 1 = console only, 0 = no logs')
+        self.configParser.set('logs','logmode', 3)
+        self.configParser.set('logs','#pathtoFile is the path from the main directory for your logs, all directory need to exist. default path is datas/logs/')
+        self.configParser.set('logs','pathtoFile' ,'datas/logs/')
+
         self.configParser.write(cfgFile)
         cfgFile.close()
 
-        self.loggerConfig.logIt (fromModule = "config - rewriteNewConfigFile" , tag = "INFO", content = "config.ini have been generated in main directory" )
-
+        configFile = self.configParser.read(self.filePath)
 
     def ConfigSectionMap(self,section):
         """

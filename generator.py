@@ -8,11 +8,12 @@ import xml.dom.minidom as minidom
 import imp
 from math import sqrt, floor
 import StringIO
+import urllib
+
+from lib.utils import *
 
 from maze import *
 from mazeView import *
-
-from lib.utils import *
 
 useTkInter = False
 
@@ -21,7 +22,7 @@ try:
 	import tkMessageBox
 	useTkInter = True
 except ImportError:
-	print logger.getTimedHeader() + " main :: [WARNING] TkInter not installed, displaying question in console ...."
+	logger.logIt (fromModule = "import MAIN" , tag = "WARNING", content = "TkInter not installed, displaying question in console ....")
 
 class Generator:
 	'''
@@ -414,8 +415,7 @@ class Generator:
 			logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Proxy data :\n\t* Hostname : " + hostname + "\n\t* Port : " + port + "\n\t* Username : " + username + "\n\t* Password : " + config.ConfigSectionMap("network")['password'])
 			
 			#try to make request with proxy & without it something failed ( stupid user ! )
-			logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Try to make url call without proxy ...")
-
+			logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Try to make url call with defined proxy ...")
 			value = True;
 			try:
 				urllib.urlopen("http://example.com",proxies = {"http":"http://" + username + ":" + password + "@" + hostname + ":" + port})
@@ -424,15 +424,17 @@ class Generator:
 			except:
 				logger.logIt (fromModule = "generateWikipediaContent" , tag = "ERROR", content = "Can't connect with proxy , check your config.ini.... Now, try to connect without proxy !!")
 				try:
-					urllib.urlopen("http://example.com",proxies={'http':'http://example.com:8080'})
-				except IOError:
+					urllib.urlopen("http://example.com")
+					logger.logIt (fromModule = "generateWikipediaContent" , tag = "INFO", content = "Successfully connected without proxy, overriding user settings...")
+				except:
 					logger.logIt (fromModule = "generateWikipediaContent" , tag = "CRITICAL", content = "Can't connect with or without proxy , user may check the config.ini")
 					value = False
+
 			if value :
 				logger.logIt (fromModule = "generateWikipediaContent" , tag = "WARNING", content = "Set FORCEPROXYOFF mode because we can connect without proxy !")
 				config.forceProxyOff = True
 
-		
+		#loop on each set of paintings !
 		for i in range (len(self.listPaintings)):
 			#check if directory exist ....
 			activeDirectory = self.textsPaintingsPath + self.listPaintings[i] + "/"

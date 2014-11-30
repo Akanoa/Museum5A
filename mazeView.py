@@ -2,15 +2,17 @@
 from maze import *
 from sys import *
 
+import lib.utils as utils
+from lib.utils import *
+
 try:
 	import pygame
 except :
-	print "Can't import pygame... check your installation"
+  logger.logIt (fromModule = "import MAIN" , tag = "ERROR", content = "Can't import pygame... check your installation if you want to use visualisation module")
 	
 from math import floor
 
-import lib.utils as utils
-from lib.utils import *
+
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
